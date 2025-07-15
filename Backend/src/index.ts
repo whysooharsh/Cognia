@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import { contentModel, userModel } from "./db";
+import { contentModel, LinkModel, userModel } from "./db";
 import { JWT_SECRET, MONGODB_URI, PORT } from "./config";
 import { userMiddleware } from "./middleware";
+import { helper } from "./util";
 dotenv.config();
 
 
@@ -20,7 +21,7 @@ const saltRounds = 10;
 app.post("/api/v1/signup", async (req, res) => {
     try {
         console.log("Signup request received:", req.body);
-        
+
         const username = req.body.username;
         const password = req.body.password;
 
@@ -39,16 +40,13 @@ app.post("/api/v1/signup", async (req, res) => {
             });
         }
 
-        console.log("Hashing password for user:", username);
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        console.log("Creating user in database");
         const user = await userModel.create({
             username,
-            password : hashedPassword
+            password: hashedPassword
         });
 
-        console.log("User created successfully:", user);
 
         res.status(201).json({
             message: "User signed up successfully",
@@ -62,121 +60,200 @@ app.post("/api/v1/signup", async (req, res) => {
             error: error instanceof Error ? error.message : "Unknown error"
         });
     }
-})
+});
 app.post("/api/v1/signin", async (req, res) => {
 
-    try{
+    try {
         console.log("Signin request received:", req.body);
-        
-        const username = req.body.username; 
+
+        const username = req.body.username;
         const password = req.body.password;
 
-        if(!username || !password){
+        if (!username || !password) {
             console.log("Missing username or password");
             return res.status(400).json({
-                message : "Username and password are required"
+                message: "Username and password are required"
             })
         }
 
-        console.log("Looking for user:", username);
-        const existingUser = await userModel.findOne({ username});
-        if(!existingUser){
+        const existingUser = await userModel.findOne({ username });
+        if (!existingUser) {
             console.log("User not found:", username);
             return res.status(411).json({
-                message : "User doesn't exist"
+                message: "User doesn't exist"
             });
         }
-        
-        console.log("User found, comparing passwords");
-        const passOk = await bcrypt.compare(password, existingUser.password);
-        console.log("Password comparison result:", passOk);
-        
 
-        if(!passOk){
+        const passOk = await bcrypt.compare(password, existingUser.password);
+
+        if (!passOk) {
             console.log("Password incorrect");
             return res.status(403).json({
-                message : "Wrong credentials"
+                message: "Wrong credentials"
             });
         }
-        
-        console.log("Generating token for user:", existingUser._id);
+
         const token = jwt.sign({ id: existingUser._id }, JWT_SECRET);
-        console.log("Token generated successfully:", token);
 
         const response = {
             message: "Login successful",
             token: token
         };
-        console.log("Sending response:", response);
- 
-        return res.status(200).json(response)
-         
 
-    } catch(error){
+        return res.status(200).json(response)
+
+
+    } catch (error) {
         console.log("error signing up : ", error);
         res.status(500).json({
-            message : "Internal Server Error"
-        })
+            message: "Internal Server Error"
+        });
     }
 
 
-})
- 
+});
+
 
 app.post("/api/v1/content", userMiddleware, async (req, res) => {
 
-    const link = req.body.link;
-    const type = req.body.type; 
+    try {
+        const link = req.body.link;
+        const type = req.body.type;
+        await contentModel.create({
+            link,
+            type,
 
-    await contentModel.create({
-        link,
-        type,
-        //@ts-ignore
-        userId : req.userId,        tags : []
-    })
-    return res.json({
-        message : "content added"
-    })
+            userId: req.userId, tags: []
+        });
+        return res.json({
+            message: "content added"
+        });
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Internal Server error",
+        });
+    }
 
-})
+});
 
 app.get("/api/v1/content", userMiddleware, async (req, res) => {
 
-    //@ts-ignore 
-    const userId = req.userId;
-    const content = await contentModel.find({
-        userId : userId
-    }).populate("userId", "username");
+    try {
+        const userId = req.userId;
+        const content = await contentModel.find({
+            userId: userId
+        }).populate("userId", "username");
 
-    res.json({
-        content
-    })
+        res.json({
+            content
+        })
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
 
 
-})
+});
 
 
 app.delete("/api/v1/content", async (req, res) => {
 
-    const contentId = req.body.contentId;
+    try {
 
-    await contentModel.deleteMany({
-        contentId, 
-        // @ts-ignore
-        userId : req.userId, 
-    })
+        const contentId = req.body.contentId;
 
-    res.json({
-        message : "Deleted"
-    })
-})
+        await contentModel.deleteMany({
+            contentId,
 
-app.post("/api/v1/brain/share", (req, res) => {
+            userId: req.userId,
+        });
 
-})
+        res.json({
+            message: "Deleted"
+        });
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+});
 
-app.get("/api/v1/brain/:shareLink", (req, res) => {
+app.post("/api/v1/brain/share", async (req, res) => {
 
+    try {
+        const share = req.body.share;
+        if (share) {
+            await LinkModel.create({
+
+                userId: req.userId,
+                hash: helper(10)
+            });
+        } else {
+            await LinkModel.deleteOne({
+
+                userId: req.userId,
+            });
+        }
+
+        res.json({
+            message: "Updated sharable link"
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+
+});
+
+app.get("/api/v1/brain/:shareLink", async (req, res) => {
+
+    try {
+
+        const hash = req.params.shareLink;
+        const link = await LinkModel.findOne({ hash });
+
+        if (!link) {
+            return res.status(404).json({
+                message: "Invalid Link"
+            })
+        }
+
+        const [content, user] = await Promise.all([
+            contentModel.find({
+                userId: link.userId,
+            }),
+            userModel.findOne({
+                userId: link.userId,
+            })
+        ]);
+
+        if (!user) {
+            return res.status(404).json({
+                message: "user not found",
+            })
+        }
+
+        return res.json({
+            username: user.username,
+            content,
+        });
+    } catch (err) {
+
+        console.error(err);
+        res.status(500).json({
+            message: "Internal server error",
+        });
+
+    }
 })
 
 export const connectDB = async () => {
