@@ -184,26 +184,31 @@ app.delete("/api/v1/content", async (req, res) => {
     }
 });
 
-app.post("/api/v1/brain/share", async (req, res) => {
+app.post("/api/v1/brain/share",userMiddleware, async (req, res) => {
 
     try {
-        const share = req.body.share;
+        const share = req.body.share===true || req.body.share==="true";
+
         if (share) {
-            await LinkModel.create({
+            const hash = helper(10);
+            await LinkModel.findOneAndUpdate(
+               { userId: req.userId },
+               { hash: hash },
+               { upsert : true, new : true }
+            );
 
-                userId: req.userId,
-                hash: helper(10)
-            });
+            res.json({
+                message: "/share/" + hash
+            })
         } else {
-            await LinkModel.deleteOne({
-
+            await LinkModel.deleteMany({
                 userId: req.userId,
+            });
+            res.json({
+                message: "Removed Link",
+                share : false
             });
         }
-
-        res.json({
-            message: "Updated sharable link"
-        });
     }
     catch (error) {
         console.log(error);
@@ -220,7 +225,8 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
 
         const hash = req.params.shareLink;
         const link = await LinkModel.findOne({ hash });
-
+        console.log(link);
+        console.log(hash);
         if (!link) {
             return res.status(404).json({
                 message: "Invalid Link"
@@ -232,7 +238,7 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
                 userId: link.userId,
             }),
             userModel.findOne({
-                userId: link.userId,
+                _id: link.userId,
             })
         ]);
 
