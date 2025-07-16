@@ -9,11 +9,8 @@ import { userMiddleware } from "./middleware";
 import { helper } from "./util";
 dotenv.config();
 
-
-
 const app = express();
 app.use(express.json());
-
 
 
 const saltRounds = 10;
