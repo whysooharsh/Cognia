@@ -1,1 +1,6 @@
 @import "tailwindcss";
+@layer utilities {
+  .all-unset {
+    all: unset;
+  }
+}

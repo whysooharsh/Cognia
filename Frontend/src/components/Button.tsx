@@ -12,14 +12,14 @@ const varientClasses = {
 };
 
 
-const defaultStyles = "px-4 py-2 rounded-sm font-light flex items-center justify-center text-center";
+const defaultStyles = "px-4 py-2 rounded-sm font-light flex items-center justify-center text-center ";
 
 export function Button({varient, text, icon}: ButtonProps){
-    return <button className={varientClasses[varient] + defaultStyles }>
-        <div className="pr-2">
-        {icon}
-            
-        </div>
-        {text}
-    </button>
+    return <button className={varientClasses[varient] + defaultStyles}>
+  <span className="flex items-center">
+    {icon && <span className="pr-2">{icon}</span>}
+    <span>{text}</span>
+  </span>
+</button>
+
 }
