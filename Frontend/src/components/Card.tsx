@@ -2,6 +2,8 @@ import { DeleteIcon } from "../icons/DeleteIcon";
 import { DocIcon } from "../icons/DocIcon";
 import { ShareIcon } from "../icons/ShareIcon";
 import { useEffect } from "react";
+import { Youtube } from "../icons/VideoIcon";
+import { XIcon } from "../icons/XIcon";
 
 interface CardProps {
   title: string;
@@ -11,6 +13,7 @@ interface CardProps {
   tags?: string[];
 }
 
+
 export function Card({ title, link, type, tasks, tags }: CardProps) {
   useEffect(() => {
     if (type === "twitter" && (window as any).twttr?.widgets) {
@@ -19,19 +22,9 @@ export function Card({ title, link, type, tasks, tags }: CardProps) {
   }, [type]);
 
   const getCardClasses = () => {
-    const baseClasses = "rounded-xl bg-white shadow-sm p-4 flex flex-col space-y-4 border border-gray-200";
-    
-    switch (type) {
-      case "youtube":
-        return `${baseClasses} w-80 h-fit`;
-      case "twitter":
-        return `${baseClasses} w-72 h-fit overflow-hidden`;
-      case "todo":
-        return `${baseClasses} w-64 h-fit`;
-      default:
-        return `${baseClasses} w-72 h-fit`;
-    }
-  };
+    return "rounded-xl bg-white shadow-sm p-4 flex flex-col space-y-4 border border-gray-200 w-full h-fit";
+};
+
 
   const renderContent = () => {
     if (type === "youtube") {
@@ -78,12 +71,24 @@ export function Card({ title, link, type, tasks, tags }: CardProps) {
 
     return null;
   };
+  const getIconType = () => {
+    switch(type) {
+      case "youtube" :
+        return <Youtube/>;
+      case "twitter" :
+        return <XIcon/>;
+      case "todo" : 
+        return <DocIcon/>;
+      default :
+        return <DocIcon/>;
+    }
+  };
 
   return (
     <div className={getCardClasses()}>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2 text-gray-600">
-          <DocIcon />
+          {getIconType()}
           <h3 className="text-sm font-medium text-gray-800">{title}</h3>
         </div>
         <div className="flex items-center gap-3 text-gray-600">
