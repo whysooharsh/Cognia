@@ -7,10 +7,12 @@ import { contentModel, LinkModel, userModel } from "./db";
 import { JWT_SECRET, MONGODB_URI, PORT } from "./config";
 import { userMiddleware } from "./middleware";
 import { helper } from "./util";
+import cors from "cors"
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 
 const saltRounds = 10;
