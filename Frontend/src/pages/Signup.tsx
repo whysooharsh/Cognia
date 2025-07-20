@@ -7,11 +7,12 @@ import { useNavigate } from "react-router-dom";
 export function Signup(){
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
-  
+    const navigate = useNavigate();
+    
     async function signup(){
          const username = usernameRef.current?.value;
          const password = passwordRef.current?.value;
-         const navigate = useNavigate();
+         
          await axios.post(BACKEND_URL + "/api/v1/signup", {
                 username,
                 password

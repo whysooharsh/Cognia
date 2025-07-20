@@ -11,10 +11,11 @@ interface CardProps {
   type: "twitter" | "youtube" | "todo";
   tasks?: string[];
   tags?: string[];
+  createdAt?: string;
 }
 
 
-export function Card({ title, link, type, tasks, tags }: CardProps) {
+export function Card({ title, link, type, tasks, tags, createdAt }: CardProps) {
   useEffect(() => {
     if (type === "twitter" && (window as any).twttr?.widgets) {
       (window as any).twttr.widgets.load();
@@ -23,14 +24,15 @@ export function Card({ title, link, type, tasks, tags }: CardProps) {
 
   const getCardClasses = () => {
     return "rounded-xl bg-white shadow-sm p-4 flex flex-col space-y-4 border border-gray-200 w-full h-fit";
-};
+  };
 
 
   const renderContent = () => {
     if (type === "youtube") {
       const embedLink = link
         .replace("watch?v=", "embed/")
-        .replace("watch", "embed");
+        .replace("youtu.be/", "youtube.com/embed/");
+
 
       return (
         <iframe
@@ -72,15 +74,15 @@ export function Card({ title, link, type, tasks, tags }: CardProps) {
     return null;
   };
   const getIconType = () => {
-    switch(type) {
-      case "youtube" :
-        return <Youtube/>;
-      case "twitter" :
-        return <XIcon/>;
-      case "todo" : 
-        return <DocIcon/>;
-      default :
-        return <DocIcon/>;
+    switch (type) {
+      case "youtube":
+        return <Youtube />;
+      case "twitter":
+        return <XIcon />;
+      case "todo":
+        return <DocIcon />;
+      default:
+        return <DocIcon />;
     }
   };
 
@@ -113,7 +115,11 @@ export function Card({ title, link, type, tasks, tags }: CardProps) {
           </div>
         )}
 
-        <div className="text-xs text-gray-400">Added on 12/05/23</div>
+        <div className="text-xs text-gray-400">
+          Added on{" "}
+          {new Date(createdAt ?? new Date().toISOString()).toLocaleDateString()}
+
+        </div>
       </div>
     </div>
   );

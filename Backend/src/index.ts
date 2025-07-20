@@ -121,7 +121,7 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
         await contentModel.create({
             link,
             type,
-
+            title : req.body.title,
             userId: req.userId, tags: []
         });
         return res.json({
@@ -197,7 +197,8 @@ app.post("/api/v1/brain/share",userMiddleware, async (req, res) => {
             );
 
             res.json({
-                message: "/share/" + hash
+                message: "Share link created", 
+                hash : hash
             })
         } else {
             await LinkModel.deleteMany({

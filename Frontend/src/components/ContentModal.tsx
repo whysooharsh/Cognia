@@ -1,7 +1,39 @@
+import axios from "axios";
 import { CloseIcon } from "../icons/CloseIcon";
 import { Button } from "./Button";
 import { InputComponent } from "./Input";
+import { useRef, useState } from "react";
+import { BACKEND_URL } from "./config";
+
+const ContentType = {
+    Youtube: "youtube",
+    Twitter: "twitter"
+} as const;
+
+type ContentTypeVal = typeof ContentType[keyof typeof ContentType];
+
 export function CreateContentModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+
+    const titleRef = useRef<HTMLInputElement>(null);
+    const linkRef = useRef<HTMLInputElement>(null);
+    const [type, setType] = useState<ContentTypeVal>(ContentType.Youtube); 
+        // had to black box this grabage  
+
+    function addContent(){
+        const title = titleRef.current?.value;
+        const link = linkRef.current?.value;
+
+        axios.post(`${BACKEND_URL}/api/v1/content`, {
+            link, 
+            title, 
+            type
+        }, {
+            headers : {
+                "Authorization" : localStorage.getItem("token")
+            }
+        })
+        onClose();
+    } 
 
     return (
         <>
@@ -15,11 +47,26 @@ export function CreateContentModal({ open, onClose }: { open: boolean; onClose: 
                         </button>
                         <h2 className="text-xl font-semibold mb-4 text-center">Create New Content</h2>
                         <div className="text-black space-y-3 ">
-                            <InputComponent placeholder={"Title"} />
-                            <InputComponent placeholder={"Link"} />
+                            <InputComponent ref={titleRef} placeholder={"Title"} />
+                            <InputComponent ref={linkRef} placeholder={"Link"} />
+                        </div>
+                        <div className="text-left font-medium">
+                            <h1 className="p-2">Type</h1>
+                            <div className="flex gap-2">
+
+                           
+                            <Button text = "Youtube" varient={type===ContentType.Youtube?
+                                "primary" : "secondary"}
+                                onClick={() => setType(ContentType.Youtube)}
+                                ></Button>
+                            <Button text = "Twitter" varient={type===ContentType.Twitter?
+                                "primary" : "secondary"} 
+                                onClick={() => setType(ContentType.Twitter)}
+                                ></Button>
+                                 </div>
                         </div>
                         <div className="pt-6 ">
-                            <Button varient="primary" text="Submit" icon={undefined} />
+                            <Button onClick={addContent} varient="primary" text="Submit" icon={undefined} />
                         </div>
                     </div>
                 </div>}
