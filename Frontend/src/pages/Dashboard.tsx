@@ -8,6 +8,8 @@ import { SideBar } from "../components/Sidebar"
 import { useContent } from "../hooks/useContent"
 import axios from "axios"
 import { BACKEND_URL } from "../components/config"
+import { showCopyToast } from "../components/CopyToast"
+
 export function Dashboard() {
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -15,7 +17,7 @@ export function Dashboard() {
 
   async function handleCopy(text:string) {
       await navigator.clipboard.writeText(text);
-      alert(`Copied to cliboard : ${text}`)
+      showCopyToast();
   }
 
 
@@ -52,7 +54,7 @@ export function Dashboard() {
           } catch(error){
             console.error("error", error);
           }
-          }   } 
+          }} 
           varient="secondary" text="Share brain" icon={< ShareIcon />} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-8">

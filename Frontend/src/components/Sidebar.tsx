@@ -1,59 +1,57 @@
 import { useState } from "react";
 import { DocIcon } from "../icons/DocIcon";
-import { SearchIcon } from "../icons/SearchIcon";
 import { Youtube } from "../icons/VideoIcon";
 import { XIcon } from "../icons/XIcon";
-import { ShareIcon } from "../icons/ShareIcon";
 import { HashIcon } from "../icons/HashIcon";
+import { MainLogo } from "../icons/MainLogo";
+import { SidebarIcon } from "../icons/SidebarIcon";
+import { ShareLink } from "../icons/ShareLink";
 
 export function SideBar() {
+    const [open, setOpen] = useState(true);
 
-    const [open, setOpen] = useState(false);
+    const menuItems = [
+        {icon : <DocIcon />, label : "Notes"}, 
+        { icon: <Youtube />, label: "Video" },
+        { icon: <XIcon />, label: "Tweet" },
+        { icon: <ShareLink />, label: "Links" },
+        { icon: <HashIcon />, label: "Tags" },
+    ];
 
     return (
-        <div className="h-screen bg-white w-72 fixed left-0 top-0 border border-black/20 p-4 backdrop-blur-2xl overflow-hidden shadow-2xl">
+        <div className={`h-screen ${open ? "w-72" : "w-16"} bg-white fixed left-0 top-0 border border-black/20 p-4 backdrop-blur-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out`}>
 
-            <div className="flex flex-col text-[16px] ">
-                <div className="flex text-2xl pt-4 items-center">
-                    <div className="mx-2 text-purple-600"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />
-                    </svg>
+            <div className="flex items-center justify-between">
+                {open && (
+                    <div className="flex items-center gap-2 text-xl font-medium">
+                        <div className="text-gray-600">
+                            <MainLogo />
+                        </div>
+                        <span className="">Cognia</span>
                     </div>
-                    <div className="">Brainly</div>
+                )}
+                <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 cursor-pointer rounded-full ml-auto"
+                    onClick={() => setOpen(!open)}>
+                    <SidebarIcon />
                 </div>
-                <div className="space-y-4 text-neutral-500 font-medium mt-4">
-                    <div className="flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out ">
-                        <div className="ml-2 ">
-                            <DocIcon />
-                        </div>
-                        <p className="text-[16px] font-medium group-hover:text-indigo-500 text-neutral-500 transition-all ease-in-out">Notes</p>
-                    </div>
-                    <div className="text-sm flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out ">
-                        <div className="ml-2 scale-[1.2]">
-                            <Youtube />
-                        </div>
-                        <p className="text-[16px] font-medium group-hover:text-indigo-500 text-neutral-500 transition-all ease-in-out">Video</p>
-                    </div>
-                    <div className="text-[16px] flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out ">
-                        <div className="ml-2 ">
-                            <XIcon></XIcon>
-                        </div>
-                        <p className=" font-medium group-hover:text-indigo-500 text-neutral-500 transition-all ease-in-out">Tweet</p>
-                    </div>
-                    <div className="text-[16px] flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out ">
-                        <div className="ml-2 ">
-                            <ShareIcon/>
-                        </div>
-                        <p className=" font-medium group-hover:text-indigo-500 text-neutral-500 transition-all ease-in-out">Links</p>
-                    </div>
-                    <div className="text-[16px] flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out ">
-                        <div className="ml-2 ">
-                            <HashIcon/>
-                        </div>
-                        <p className=" font-medium group-hover:text-indigo-500 text-neutral-500 transition-all ease-in-out">Tags</p>
-                    </div>
+                </div>
+                <div className="flex flex-col mt-8 gap-4">
+                    {menuItems.map((item, idx) => (
+                        <div 
+                            key = {idx}
+                            className={`flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out
+                                ${open? "" : "justify-center"}`
 
-                </div>
+                            }
+                            >
+                            <div className="text-lg">{item.icon}</div>
+                            { open && (
+                                <span className="font-medium group-hover:text-indigo-500 text-neutral-500 transition-all ease-in-out">{item.label}</span>                                
+                            )}
+                        </div>
+                    ))}
+                    
+
             </div>
 
 
