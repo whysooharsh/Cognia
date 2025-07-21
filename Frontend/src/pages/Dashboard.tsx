@@ -58,7 +58,7 @@ export function Dashboard() {
                     },
                   }
                 );
-                const shareUrl = `${window.location.origin}/api/v1/brain/share/${response.data.hash}`;
+                const shareUrl = `${window.location.origin}/brain/${response.data.hash}`;
 
                 handleCopy(shareUrl);
               } catch (error) {
