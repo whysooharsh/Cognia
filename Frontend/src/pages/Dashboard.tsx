@@ -58,7 +58,8 @@ export function Dashboard() {
                     },
                   }
                 );
-                const shareUrl = `http://localhost:5173/api/v1/brain/share/${response.data.hash}`;
+                const shareUrl = `${window.location.origin}/api/v1/brain/share/${response.data.hash}`;
+
                 handleCopy(shareUrl);
               } catch (error) {
                 console.error("error", error);
