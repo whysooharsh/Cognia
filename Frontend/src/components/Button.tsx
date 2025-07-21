@@ -10,8 +10,8 @@ interface ButtonProps{
 }
 
 const varientClasses = {
-    "primary" : "bg-purple-400 text-white ",
-    "secondary" : "bg-purple-100 text-purple-800 "
+    "primary" : "bg-gray-500 text-white ",
+    "secondary" : "bg-gray-200 text-gray-800 "
 };
 
 
