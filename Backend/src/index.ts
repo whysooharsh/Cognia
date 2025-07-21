@@ -159,29 +159,27 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
 });
 
 
-app.delete("/api/v1/content", async (req, res) => {
-
-    try {
-
-        const contentId = req.body.contentId;
-
-        await contentModel.deleteMany({
-            contentId,
-
-            userId: req.userId,
-        });
-
-        res.json({
-            message: "Deleted"
-        });
+app.delete("/api/v1/content/:id", userMiddleware, async (req, res) => {
+  try {
+    const contentId = req.params.id;
+    if (!contentId || contentId === "undefined") {
+      return res.status(400).json({ message: "Invalid content ID provided" });
     }
-    catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            message: "Internal Server Error"
-        });
+    const result = await contentModel.deleteOne({
+      _id: contentId,
+      userId: req.userId,
+    });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Content not found or unauthorized" });
     }
+    res.json({ message: "Deleted successfully" });
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
+
 
 app.post("/api/v1/brain/share",userMiddleware, async (req, res) => {
 

@@ -4,18 +4,21 @@ import { ShareIcon } from "../icons/ShareIcon";
 import { useEffect } from "react";
 import { Youtube } from "../icons/VideoIcon";
 import { XIcon } from "../icons/XIcon";
+import axios from "axios";
+import { BACKEND_URL } from "./config";
 
 interface CardProps {
+  id: string;
   title: string;
   link: string;
   type: "twitter" | "youtube" | "todo";
   tasks?: string[];
   tags?: string[];
   createdAt?: string;
+  onDelete?: (id: string) => void;
 }
 
-
-export function Card({ title, link, type, tasks, tags, createdAt }: CardProps) {
+export function Card({ id, title, link, type, tasks, tags, createdAt, onDelete }: CardProps) {
   useEffect(() => {
     if (type === "twitter" && (window as any).twttr?.widgets) {
       (window as any).twttr.widgets.load();
@@ -26,13 +29,11 @@ export function Card({ title, link, type, tasks, tags, createdAt }: CardProps) {
     return "rounded-xl bg-white shadow-sm p-4 flex flex-col space-y-4 border border-gray-200 w-full h-fit";
   };
 
-
   const renderContent = () => {
     if (type === "youtube") {
       const embedLink = link
         .replace("watch?v=", "embed/")
         .replace("youtu.be/", "youtube.com/embed/");
-
 
       return (
         <iframe
@@ -95,7 +96,29 @@ export function Card({ title, link, type, tasks, tags, createdAt }: CardProps) {
         </div>
         <div className="flex items-center gap-3 text-gray-600">
           <ShareIcon />
-          <DeleteIcon />
+          <button
+            onClick={async () => {
+              try {
+                const token = localStorage.getItem("token");
+                await axios.delete(`${BACKEND_URL}/api/v1/content/${id}`, {
+                  headers: {
+                    Authorization: token,
+                  }
+                });
+                alert("Deleted successfully!");
+                
+                if (onDelete) {
+                  onDelete(id);
+                }
+              } catch (error) {
+                console.error("Delete failed", error);
+                alert("Failed to delete content");
+              }
+            }}
+            className="hover:text-red-500 transition-colors"
+          >
+            <DeleteIcon />
+          </button>
         </div>
       </div>
 
@@ -117,8 +140,20 @@ export function Card({ title, link, type, tasks, tags, createdAt }: CardProps) {
 
         <div className="text-xs text-gray-400">
           Added on{" "}
-          {new Date(createdAt ?? new Date().toISOString()).toLocaleDateString()}
-
+          {(() => {
+            let displayDate: Date;
+            if (createdAt) {
+              const parsedDate = new Date(createdAt);
+              if (!isNaN(parsedDate.getTime())) {
+                displayDate = parsedDate;
+              } else {
+                displayDate = new Date();
+              }
+            } else {
+              displayDate = new Date();
+            }
+            return displayDate.toLocaleDateString();
+          })()}
         </div>
       </div>
     </div>

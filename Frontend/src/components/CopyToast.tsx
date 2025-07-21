@@ -11,7 +11,7 @@ export function showCopyToast() {
         <div className="flex items-center p-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="w-8 h-8 text-green-500 flex-shrink-0"
+            className="w-8 h-8 text-gray-500 flex-shrink-0"
             viewBox="0 0 64 64"
             fill="currentColor"
           >

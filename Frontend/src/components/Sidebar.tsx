@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { DocIcon } from "../icons/DocIcon";
 import { Youtube } from "../icons/VideoIcon";
 import { XIcon } from "../icons/XIcon";
@@ -7,8 +6,12 @@ import { MainLogo } from "../icons/MainLogo";
 import { SidebarIcon } from "../icons/SidebarIcon";
 import { ShareLink } from "../icons/ShareLink";
 
-export function SideBar() {
-    const [open, setOpen] = useState(true);
+interface SidebarProps { 
+    isOpen : boolean;
+    setIsOpen : (val : boolean) => void;
+}
+
+export function SideBar({isOpen, setIsOpen} : SidebarProps) {
 
     const menuItems = [
         {icon : <DocIcon />, label : "Notes"}, 
@@ -19,10 +22,10 @@ export function SideBar() {
     ];
 
     return (
-        <div className={`h-screen ${open ? "w-72" : "w-16"} bg-white fixed left-0 top-0 border border-black/20 p-4 backdrop-blur-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out`}>
+        <div className={`h-screen ${isOpen ? "w-72" : "w-16"} bg-white fixed left-0 top-0 border border-black/20 p-4 backdrop-blur-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out`}>
 
             <div className="flex items-center justify-between">
-                {open && (
+                {isOpen && (
                     <div className="flex items-center gap-2 text-xl font-medium">
                         <div className="text-gray-600">
                             <MainLogo />
@@ -31,7 +34,7 @@ export function SideBar() {
                     </div>
                 )}
                 <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 cursor-pointer rounded-full ml-auto"
-                    onClick={() => setOpen(!open)}>
+                    onClick={() => setIsOpen(!isOpen)}>
                     <SidebarIcon />
                 </div>
                 </div>
@@ -40,12 +43,12 @@ export function SideBar() {
                         <div 
                             key = {idx}
                             className={`flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out
-                                ${open? "" : "justify-center"}`
+                                ${isOpen? "" : "justify-center"}`
 
                             }
                             >
                             <div className="text-lg">{item.icon}</div>
-                            { open && (
+                            { isOpen && (
                                 <span className="font-medium group-hover:text-indigo-500 text-neutral-500 transition-all ease-in-out">{item.label}</span>                                
                             )}
                         </div>
