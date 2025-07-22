@@ -173,14 +173,27 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative mt-12 pb-12 bg-white">
-          <div className="absolute inset-0 h-2/3 bg-gray-50" />
-          <div className="relative mx-auto lg:max-w-6xl">
-            <img
-              className="transform scale-105 rounded-xl shadow-md"
-              src="https://www.searchenginejournal.com/wp-content/uploads/2023/08/best-landing-page-examples-64e6080f990bb-sej-1280x720.png"
-              alt="Cognia Hero"
-            />
+        <div className="relative mt-12 pb-12">
+         
+           <div className="relative mx-auto lg:max-w-4xl px-6">
+            <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
+               <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-rose-400 to-red-600 rounded-full opacity-60 blur-xl"></div>
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-orange-400 to-pink-600-600 rounded-full opacity-50 blur-xl"></div>
+              
+              <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg">
+                <iframe 
+                  className="w-full h-full"
+                  src="https://www.youtube-nocookie.com/embed/47ARX-6srGk?si=D_KL0PcK0UxlYSJm&amp;controls=0" 
+                  title="YouTube video player" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  referrerPolicy="strict-origin-when-cross-origin" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+              
+              <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/5 rounded-2xl pointer-events-none"></div>
+            </div>
           </div>
         </div>
       </section>

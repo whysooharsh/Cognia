@@ -27,13 +27,13 @@ export function SideBar({isOpen, setIsOpen} : SidebarProps) {
             <div className="flex items-center justify-between">
                 {isOpen && (
                     <div className="flex items-center gap-2 text-xl font-medium">
-                        <div className="text-gray-600">
+                        <div className="text-gray-600 ">
                             <MainLogo />
                         </div>
                         <span className="">Cognia</span>
                     </div>
                 )}
-                <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 cursor-pointer rounded-full ml-auto"
+                <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 cursor-pointer rounded-full ml-auto hover:rotate-180 transition-transform duration-500"
                     onClick={() => setIsOpen(!isOpen)}>
                     <SidebarIcon />
                 </div>
@@ -58,7 +58,7 @@ export function SideBar({isOpen, setIsOpen} : SidebarProps) {
             </div>
 
 
-
+                    
         </div>
     );
 };  

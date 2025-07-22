@@ -88,7 +88,7 @@ export function Signin() {
             {showSuccessModal && (
                 <div className="h-screen w-screen backdrop-blur-lg bg-white/20 fixed top-0 left-0 flex justify-center items-center z-50">
                     <div className="bg-white text-gray-900 p-10 rounded-2xl shadow-lg relative max-w-sm w-full flex flex-col items-center">
-                        <h2 className="text-xl font-semibold mb-4 text-center text-green-600">Welcome back!</h2>
+                        <h2 className="text-xl font-semibold mb-4 text-center text-gray-600">Welcome back!</h2>
                         <p className="text-center mb-4">{successMessage}</p>
                         <div className="mt-2">
                             <Spinner />

@@ -70,7 +70,17 @@ export function Signup() {
                     <InputComponent ref={usernameRef} placeholder="username" />
                     <InputComponent ref={passwordRef} placeholder="password" type="password"  />
                     <Button onClick={signup} varient="primary" text="Signup" fullWidth={true} />
-
+                     <div className="text-center mt-4">
+                        <p className="text-gray-600 text-sm">
+                            Already have an account?{" "}
+                            <button
+                                onClick={() => navigate("/signin")}
+                                className="text-gray-600 hover:text-gray-800 underline font-medium"
+                            >
+                                Sign in here
+                            </button>
+                        </p>
+                    </div>
                 </div>
             </div>
 
