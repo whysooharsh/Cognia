@@ -36,17 +36,16 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-6 right-6 flex flex-row items-end text-right space-y-2">
-           <span className="text-gray-500 text-sm font-bold px-2">Created by : </span>
-          <div className="flex items-center gap-1">
-            <GithubIcon />
-            <span className="text-gray-500 text-sm">harsh</span>
-          </div>
+        <div className="absolute bottom-6 right-6 flex flex-row items-end text-right gap-2">
+          <span className="text-gray-500 text-sm font-bold px-2">Created by : </span>
           <a
-            className="text-gray-600 text-base font-medium hover:text-gray-800 transition"
+            className="flex items-center gap-1 text-gray-600 hover:text-gray-800 transition"
             href="https://www.github.com/whysooharsh"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            
+            <GithubIcon />
+            <span className="text-sm font-medium">harsh</span>
           </a>
         </div>
       </div>

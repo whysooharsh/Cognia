@@ -1,8 +1,13 @@
 import React from 'react';
 
-export const Spinner: React.FC<{ center?: boolean; size?: number }> = ({
+export const Spinner: React.FC<{ 
+  center?: boolean; 
+  size?: number; 
+  className?: string;
+}> = ({
   center = false,
   size = 28,
+  className = '',
 }) => {
   return (
     <>
@@ -38,8 +43,12 @@ export const Spinner: React.FC<{ center?: boolean; size?: number }> = ({
         }
       `}</style>
       <div
-        className={`relative inline-block ${center ? 'absolute inset-0 m-auto' : ''}`}
+        className={`relative inline-block ${center ? 'absolute inset-0 m-auto' : ''} ${className}`}
         style={{ fontSize: `${size}px`, width: '1em', height: '1em' }}
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        aria-label="Loading"
       >
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="spinner-blade" />
