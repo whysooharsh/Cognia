@@ -14,12 +14,11 @@ interface CardProps {
   type: "twitter" | "youtube" | "todo";
   tasks?: string[];
   tags?: string[];
-  createdAt?: string;
   onDelete?: (id: string) => void;
   isSharedView?: boolean;
 }
 
-export function Card({ id, title, link, type, tasks, tags, createdAt, onDelete, isSharedView = false }: CardProps) {
+export function Card({ id, title, link, type, tasks, tags, onDelete, isSharedView = false }: CardProps) {
   useEffect(() => {
     if (type === "twitter" && (window as any).twttr?.widgets) {
       (window as any).twttr.widgets.load();
@@ -141,23 +140,7 @@ export function Card({ id, title, link, type, tasks, tags, createdAt, onDelete, 
           </div>
         )}
 
-        <div className="text-xs text-gray-400">
-          Added on{" "}
-          {(() => {
-            let displayDate: Date;
-            if (createdAt) {
-              const parsedDate = new Date(createdAt);
-              if (!isNaN(parsedDate.getTime())) {
-                displayDate = parsedDate;
-              } else {
-                displayDate = new Date();
-              }
-            } else {
-              displayDate = new Date();
-            }
-            return displayDate.toLocaleDateString();
-          })()}
-        </div>
+
       </div>
     </div>
   );

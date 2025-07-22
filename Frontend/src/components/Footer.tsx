@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 overflow-hidden relative">
+    <div className="min-h-screen bg-gray-300 text-gray-900 overflow-hidden relative">
       <div className="relative z-10 flex flex-col min-h-screen pl-6 md:pl-20">
         <div className="flex-1 flex flex-col justify-center md:px-16 lg:px-20 max-w-4xl">
           <div className="mb-4">
@@ -36,22 +36,23 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-6 right-6 flex flex-col items-end text-right space-y-2">
-          <div className="flex items-center gap-2">
+        <div className="absolute bottom-6 right-6 flex flex-row items-end text-right space-y-2">
+           <span className="text-gray-500 text-sm font-bold px-2">Created by : </span>
+          <div className="flex items-center gap-1">
             <GithubIcon />
-            <span className="text-gray-500 text-sm">Created by</span>
+            <span className="text-gray-500 text-sm">harsh</span>
           </div>
           <a
             className="text-gray-600 text-base font-medium hover:text-gray-800 transition"
             href="https://www.github.com/whysooharsh"
           >
-            harsh
+            
           </a>
         </div>
       </div>
 
-      <div className="absolute bottom-0 right-0 w-[1152px] h-[1152px] overflow-hidden pointer-events-none">
-        <div className="absolute -bottom-[576px] -right-[576px] w-[1152px] h-[1152px] rounded-full border border-gray-200 bg-gradient-to-br from-white via-gray-50 to-transparent blur-xl shadow-[0_0_100px_40px_rgba(200,200,200,0.2)]"></div>
+      <div className="absolute bottom-0 right-0 w-[1000px] h-[1000px] overflow-hidden pointer-events-none">
+        <div className="absolute -bottom-[576px] -right-[576px] w-[1000px] h-[1000px] rounded-full border border-gray-200 bg-gradient-to-br from-white via-gray-50 to-transparent blur-xl shadow-[0_0_100px_40px_rgba(200,200,200,0.2)]"></div>
       </div>
     </div>
   );
