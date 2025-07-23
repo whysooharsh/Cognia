@@ -22,7 +22,7 @@ export function SideBar({isOpen, setIsOpen} : SidebarProps) {
     ];
 
     return (
-        <div className={`h-screen ${isOpen ? "w-72" : "w-16"} bg-white fixed left-0 top-0 border border-black/20 p-4 backdrop-blur-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out`}>
+        <div className={`h-screen ${isOpen ? "w-72" : "w-16"} bg-white fixed left-0 top-0 hidden md:block border border-black/20 p-4 backdrop-blur-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out`}>
 
             <div className="flex items-center justify-between">
                 {isOpen && (

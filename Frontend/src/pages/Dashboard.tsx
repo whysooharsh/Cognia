@@ -12,7 +12,7 @@ import { showCopyToast } from "../components/CopyToast";
 
 export function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { contents, refresh } = useContent();
 
   async function handleCopy(text: string) {
@@ -34,7 +34,7 @@ export function Dashboard() {
             setModalOpen(false);
           }}
         />
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-center lg:justify-end gap-4">
           <Button
             onClick={() => {
               setModalOpen(true);
