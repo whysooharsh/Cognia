@@ -1,11 +1,8 @@
-To-do   
--share endpoint   
--better auth   
--better UI/UX(pop-ups and all)   
+To-do      
 -responsiveness   
 -dark mode   
 -search/filter content by tags or title   
 -content categorization/organization    
 -export/import data   
 -user profile management   
--loading states and error boundaries   
+
