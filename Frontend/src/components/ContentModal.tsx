@@ -24,6 +24,7 @@ export function CreateContentModal({
   onContentAdded: () => void;
 }) {
   const [noteContent, setNoteContent] = useState("");
+  const [error, setError] = useState("");
   const titleRef = useRef<HTMLInputElement>(null);
   const linkRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<ContentTypeVal>(ContentType.Youtube);
@@ -32,25 +33,28 @@ export function CreateContentModal({
     const title = titleRef.current?.value;
     const link = linkRef.current?.value;
 
+    // Clear previous errors
+    setError("");
+
     const payload: any = {
       title,
       type,
     };
 
-    if (!title) {
-      alert("Title is required!");
+    if (!title?.trim()) {
+      setError("Title is required!");
       return;
     }
 
     if (type === "note") {
       if (!noteContent.trim()) {
-        alert("Content is required for notes!");
+        setError("Content is required for notes!");
         return;
       }
       payload.content = noteContent;
     } else {
-      if (!link) {
-        alert("Link is required!");
+      if (!link?.trim()) {
+        setError("Link is required!");
         return;
       }
       payload.link = link;
@@ -59,21 +63,21 @@ export function CreateContentModal({
     axios
       .post(`${BACKEND_URL}/api/v1/content`, payload, {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: `${localStorage.getItem("token")}`,
         },
       })
       .then(() => {
         if (titleRef.current) titleRef.current.value = "";
         if (linkRef.current) linkRef.current.value = "";
         setNoteContent("");
+        setError("");
         onContentAdded();
         onClose();
       })
       .catch((err) => {
-        alert(
-          "Failed to add content: " +
-            (err.response?.data?.message || err.message)
-        );
+        console.error("Failed to add content:", err);
+        const errorMessage = err.response?.data?.message || err.message || "Unknown error occurred";
+        setError("Failed to add content: " + errorMessage);
       });
   }
 
@@ -94,6 +98,14 @@ export function CreateContentModal({
             <h2 className="text-xl font-semibold mb-4 text-center">
               Create New Content
             </h2>
+
+            {error && (
+              <div className="w-full mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-red-700 text-sm" role="alert" aria-live="polite">
+                  {error}
+                </p>
+              </div>
+            )}
 
             <div className="text-black space-y-3 w-full">
               <InputComponent ref={titleRef} placeholder={"Title"} />
