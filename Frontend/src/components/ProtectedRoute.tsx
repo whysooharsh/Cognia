@@ -10,7 +10,6 @@ export function ProtectedRoute({children} : ProtectedRouteProps){
         try {
             return localStorage.getItem("token");
         } catch (error) {
-            console.warn("localStorage not available:", error);
             return null;
         }
     })();

@@ -17,7 +17,7 @@ const varientClasses = {
 
 const defaultStyles = "px-4 py-3 rounded-lg font-medium flex items-center justify-center text-center transition-all duration-200 ";
 
-export function Button({varient, text, icon, onClick, fullWidth = false, loading=false}: ButtonProps){
+export function ButtonCustom({varient, text, icon, onClick, fullWidth = false, loading=false}: ButtonProps){
     const widthClass = fullWidth ? "w-full" : "";
     const loadingClass = loading ? "opacity-70" : ""; 
     return <button onClick={onClick} className={`${varientClasses[varient]} ${defaultStyles} ${widthClass} ${loadingClass} hover:cursor-pointer hover:shadow-md`}>

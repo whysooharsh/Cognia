@@ -1,24 +1,25 @@
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { DocIcon } from "../icons/DocIcon";
-import { ShareIcon } from "../icons/ShareIcon";
 import { useEffect } from "react";
 import { Youtube } from "../icons/VideoIcon";
 import { XIcon } from "../icons/XIcon";
 import axios from "axios";
 import { BACKEND_URL } from "./config";
+import { ShareLink } from "../icons/ShareLink";
 
 interface CardProps {
   id: string;
   title: string;
   link: string;
-  type: "twitter" | "youtube" | "todo";
-  tasks?: string[];
+  content: string;
+  type: "twitter" | "youtube" | "note" | "link";
   tags?: string[];
   onDelete?: (id: string) => void;
   isSharedView?: boolean;
 }
 
-export function Card({ id, title, link, type, tasks, tags, onDelete, isSharedView = false }: CardProps) {
+export function Card({ id, title, link, type, content, tags, onDelete, isSharedView = false }: CardProps) {
+ 
   useEffect(() => {
     if (type === "twitter" && (window as any).twttr?.widgets) {
       (window as any).twttr.widgets.load();
@@ -59,29 +60,45 @@ export function Card({ id, title, link, type, tasks, tags, onDelete, isSharedVie
       );
     }
 
-    if (type === "todo" && tasks) {
-      return (
-        <>
-          <h1 className="text-lg font-semibold text-gray-900">Tasks</h1>
-          <ul className="list-disc list-inside space-y-1 text-gray-800 text-sm">
-            {tasks.map((task, i) => (
-              <li key={i}>{task}</li>
-            ))}
-          </ul>
-        </>
-      );
-    }
+ if (type === "note") {
+    return (
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-2">  
+        <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+          {content  || 'No content available'}
+        </p>
+      </div>
+    );
+  }
+     if (type === "link") {
+    return (
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 space-y-2">
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block text-blue-600 font-medium hover:underline break-words text-sm"
+        >
+          {link}
+        </a>
+      </div>
+    );
+  }
+
+
 
     return null;
   };
+
   const getIconType = () => {
     switch (type) {
       case "youtube":
         return <Youtube />;
       case "twitter":
         return <XIcon />;
-      case "todo":
+      case "note":
         return <DocIcon />;
+      case "link":
+        return <ShareLink />
       default:
         return <DocIcon />;
     }
@@ -96,7 +113,6 @@ export function Card({ id, title, link, type, tasks, tags, onDelete, isSharedVie
         </div>
         {!isSharedView && (
           <div className="flex items-center gap-3 text-gray-600">
-            <ShareIcon />
             <button
               onClick={async () => {
                 try {
@@ -107,7 +123,7 @@ export function Card({ id, title, link, type, tasks, tags, onDelete, isSharedVie
                     }
                   });
                   alert("Deleted successfully!");
-                  
+
                   if (onDelete) {
                     onDelete(id);
                   }

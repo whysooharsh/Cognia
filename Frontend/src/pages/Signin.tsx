@@ -1,4 +1,4 @@
-import { Button } from "../components/Button";
+import { ButtonCustom } from "../components/Button";
 import { InputComponent } from "../components/Input";
 import { useRef, useState } from "react";
 import { Spinner } from "../components/Spinner";
@@ -69,7 +69,7 @@ export function Signin() {
                     <InputComponent ref={usernameRef} placeholder="username" />
                     <InputComponent ref={passwordRef} placeholder="password" />
 
-                    <Button onClick={signin} varient="primary" text="Signin" fullWidth={true} />
+                    <ButtonCustom onClick={signin} varient="primary" text="Signin" fullWidth={true} />
                     
                     <div className="text-center mt-4">
                         <p className="text-gray-600 text-sm">
@@ -107,12 +107,12 @@ export function Signin() {
                             {errorMessage}
                         </p>
                         <div className="flex gap-3">
-                            <Button
+                            <ButtonCustom
                                 onClick={() => setShowErrorModal(false)}
                                 varient="primary"
                                 text="Try Again"
                             />
-                            <Button
+                            <ButtonCustom
                                 onClick={() => navigate("/signup")}
                                 varient="secondary"
                                 text="Sign Up"

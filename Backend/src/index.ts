@@ -126,20 +126,40 @@ app.post("/api/v1/signin", async (req, res) => {
 app.post("/api/v1/content", userMiddleware, async (req, res) => {
 
     try {
-        const link = req.body.link;
-        const type = req.body.type;
-        await contentModel.create({
+        const { title, link, content, type, imageUrl } = req.body;
+        if(!title || !type){
+            return res.status(400).json({
+                message : "Title and Type are Required"
+            });
+        }
+        
+        if(type === "note" && !content) { 
+            return res.status(400).json({
+                message : "Content is required for creating note"
+            });
+        }
+
+        if ((type === "youtube" || type === "twitter" || type === "link") && !link) {
+            return res.status(400).json({
+                message: "Link is required for this content type"
+            });
+        }
+
+        const createdContent = await contentModel.create({
+            title,
             link,
+            content,
+            imageUrl,
             type,
-            title : req.body.title,
-            userId: req.userId, tags: []
+            userId: req.userId,
+            tags: []
         });
         return res.json({
-            message: "content added"
+            message: "content added",
+            createdContent: createdContent
         });
     }
     catch (error) {
-        console.error(error);
         return res.status(500).json({
             message: "Internal Server error",
         });
@@ -148,18 +168,16 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
 });
 
 app.get("/api/v1/content", userMiddleware, async (req, res) => {
-
     try {
         const userId = req.userId;
         const content = await contentModel.find({
             userId: userId
-        }).populate("userId", "username");
+        }).select('title link content type tags createdAt updatedAt').populate("userId", "username");
 
         res.json({
             content
         })
     } catch (error) {
-        console.error(error);
         return res.status(500).json({
             message: "Internal Server Error"
         });

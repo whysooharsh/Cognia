@@ -1,9 +1,9 @@
-import { Button } from "../components/Button";
+import { ButtonCustom } from "../components/Button";
 import { PlusIcon } from "../icons/PlusIcon";
 import { ShareIcon } from "../icons/ShareIcon";
 import { Card } from "../components/Card";
 import { CreateContentModal } from "../components/ContentModal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SideBar } from "../components/Sidebar";
 import { useContent } from "../hooks/useContent";
 import axios from "axios";
@@ -19,9 +19,6 @@ export function Dashboard() {
     await navigator.clipboard.writeText(text);
     showCopyToast();
   }
-  useEffect(() => {
-    refresh();
-  }, [modalOpen]);
 
   return (
     <div>
@@ -33,9 +30,12 @@ export function Dashboard() {
           onClose={() => {
             setModalOpen(false);
           }}
+          onContentAdded={() => {
+            refresh();
+          }}
         />
         <div className="flex justify-center lg:justify-end gap-4">
-          <Button
+          <ButtonCustom
             onClick={() => {
               setModalOpen(true);
             }}
@@ -43,7 +43,7 @@ export function Dashboard() {
             text="Add content"
             icon={<PlusIcon />}
           />
-          <Button
+          <ButtonCustom
             onClick={async () => {
               try {
                 const token = localStorage.getItem("token");
@@ -72,20 +72,23 @@ export function Dashboard() {
         </div>
         <div className="pt-8 ">
           <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 ">
-            {contents.map(({ type, link, title, tags, _id }) => (
+            {contents.map((item) => {
+              const { type, link, title, content, tags, _id } = item;
+              return (
               <div key={_id} className="break-inside-avoid mb-4">
                 <Card 
                   id={_id} 
                   title={title} 
                   type={type} 
                   link={link} 
+                  content={content}
                   tags={tags}
                   onDelete={() => {
                     refresh();
                   }}
                 />
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </div>

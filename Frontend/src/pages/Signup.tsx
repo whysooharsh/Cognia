@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Button } from "../components/Button";
+import { ButtonCustom } from "../components/Button";
 import { InputComponent } from "../components/Input";
 import axios from "axios";
 import { BACKEND_URL } from "../components/config";
@@ -69,7 +69,7 @@ export function Signup() {
                 <div className="space-y-4">
                     <InputComponent ref={usernameRef} placeholder="username" />
                     <InputComponent ref={passwordRef} placeholder="password" type="password"  />
-                    <Button onClick={signup} varient="primary" text="Signup" fullWidth={true} />
+                    <ButtonCustom onClick={signup} varient="primary" text="Signup" fullWidth={true} />
                      <div className="text-center mt-4">
                         <p className="text-gray-600 text-sm">
                             Already have an account?{" "}
@@ -106,7 +106,7 @@ export function Signup() {
                         <p className="text-sm text-gray-400 text-center mb-6">
                             {errorMessage || "Something went wrong. Please try signing up again."}
                         </p>
-                        <Button
+                        <ButtonCustom
                             onClick={() => setShowErrorModal(false)}
                             varient="primary"
                             text="Try Again"
