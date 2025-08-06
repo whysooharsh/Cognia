@@ -9,6 +9,8 @@ import { useContent } from "../hooks/useContent";
 import axios from "axios";
 import { BACKEND_URL } from "../components/config";
 import { showCopyToast } from "../components/CopyToast";
+import { isMobile } from "react-device-detect";
+import Navbar from "../components/Navbar";
 
 export function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -23,8 +25,14 @@ export function Dashboard() {
   return (
     <div>
       <SideBar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <div 
-      className={`min-h-screen bg-white p-4 transition-all duration-300 ${sidebarOpen ? "ml-72" : "ml-16"}`}>
+      {isMobile && (
+        <Navbar />
+      )}
+      <div
+        className={`min-h-screen mt-16 lg:mt-0 bg-white px-4 py-6 transition-all duration-300 ${sidebarOpen ? "lg:ml-72" : "lg:ml-16"
+          }`}
+      >
+
         <CreateContentModal
           open={modalOpen}
           onClose={() => {
@@ -71,24 +79,25 @@ export function Dashboard() {
           />
         </div>
         <div className="pt-8 ">
-          <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {contents.map((item) => {
               const { type, link, title, content, tags, _id } = item;
               return (
-              <div key={_id} className="break-inside-avoid mb-4">
-                <Card 
-                  id={_id} 
-                  title={title} 
-                  type={type} 
-                  link={link} 
-                  content={content}
-                  tags={tags}
-                  onDelete={() => {
-                    refresh();
-                  }}
-                />
-              </div>
-            )})}
+                <div key={_id} className="break-inside-avoid mb-4">
+                  <Card
+                    id={_id}
+                    title={title}
+                    type={type}
+                    link={link}
+                    content={content}
+                    tags={tags}
+                    onDelete={() => {
+                      refresh();
+                    }}
+                  />
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
