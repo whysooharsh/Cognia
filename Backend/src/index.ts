@@ -208,6 +208,23 @@ app.delete("/api/v1/content/:id", userMiddleware, async (req, res) => {
   }
 });
 
+app.get("/api/v1/user", userMiddleware, async (req, res) => {
+    try{
+        const user = await userModel.findById(req.userId).select("username");
+        if(!user){
+            return res.status(404).json({
+                message : "User not found"
+            })
+        }
+        res.status(200).json({
+            username : user.username
+        });
+    } catch (error){
+        return res.status(500).json({
+            error : "Internal Server Error"
+        })
+    }
+})
 
 app.post("/api/v1/brain/share",userMiddleware, async (req, res) => {
 

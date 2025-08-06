@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+
 const Navbar: React.FC = () => {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -26,7 +27,7 @@ const Navbar: React.FC = () => {
     { name: "Home", href: "#home" },
     { name: "Features", href: "#features" },
     { name: "Dashboard", href: "/dashboard" },
-    { name: "Contact", href: "#contact" },
+    { name: "Contact", href: "/contact"},
   ];
 
   return (
@@ -38,7 +39,8 @@ const Navbar: React.FC = () => {
       <div className="mx-auto max-w-4xl px-4">
         <div className="flex justify-center items-center h-14 bg-white/80 backdrop-blur-md border-b border-gray-200 rounded-b-xl shadow-sm">
           <nav className="flex space-x-8 text-sm font-medium text-gray-700">
-            {navItems.map((item) => (
+             {navItems.map((item) =>
+              
               <a
                 key={item.name}
                 href={item.href}
@@ -47,7 +49,7 @@ const Navbar: React.FC = () => {
                 {item.name}
                 <span className="absolute left-0 -bottom-0.5 h-0.5 w-0 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               </a>
-            ))}
+            )}
           </nav>
         </div>
       </div>

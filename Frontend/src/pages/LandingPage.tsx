@@ -130,7 +130,7 @@ export default function Home() {
 
 
   return (
-    <div className="font-inter bg-gradient-to-br from-purple-100 to-blue-50 text-gray-900">
+    <div className="font-inter dark:bg-black bg-gradient-to-br from-purple-100 to-blue-50 text-gray-900 ">
       <Navbar />
 
       <section className="pt-20 sm:pt-28">
@@ -224,7 +224,7 @@ export default function Home() {
               />
             ))}
           </div>
-        </div>
+        </div>  
       </section>
       <section id="contact"><Footer /></section>
 

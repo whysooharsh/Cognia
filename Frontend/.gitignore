@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 src/components/DropDown.tsx
+src/components/ThemeToggle.tsx
+
 node_modules
 dist
 dist-ssr
