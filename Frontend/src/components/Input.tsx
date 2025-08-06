@@ -12,7 +12,7 @@ type TextareaProps = BaseProps & {
 };
 
 type InputProps = BaseProps & {
-  type?: "text"; // default
+  type?: "text" | "password"; 
   ref?: React.Ref<HTMLInputElement>;
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
@@ -46,7 +46,7 @@ export const InputComponent = forwardRef<
   return (
     <input
       ref={ref as React.Ref<HTMLInputElement>}
-      type="text"
+      type={type}
       placeholder={placeholder}
       className={baseClasses}
       {...(rest as React.InputHTMLAttributes<HTMLInputElement>)}

@@ -147,12 +147,12 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
 
         const createdContent = await contentModel.create({
             title,
-            link,
-            content,
-            imageUrl,
+            ...(link && { link }),
+            ...(content && { content }),
+            ...(imageUrl && { imageUrl }),
             type,
             userId: req.userId,
-            tags: []
+            tags: req.body.tags || []
         });
         return res.json({
             message: "content added",
