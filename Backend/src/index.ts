@@ -16,8 +16,8 @@ app.use(express.json());
 app.use(cors({
     origin: [
         "https://cognia-jet.vercel.app",
-        "http://localhost:5173", 
-        
+        "http://localhost:5173",
+
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -127,15 +127,15 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
 
     try {
         const { title, link, content, type, imageUrl } = req.body;
-        if(!title || !type){
+        if (!title || !type) {
             return res.status(400).json({
-                message : "Title and Type are Required"
+                message: "Title and Type are Required"
             });
         }
-        
-        if(type === "note" && !content) { 
+
+        if (type === "note" && !content) {
             return res.status(400).json({
-                message : "Content is required for creating note"
+                message: "Content is required for creating note"
             });
         }
 
@@ -170,16 +170,16 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
 app.get("/api/v1/content", userMiddleware, async (req, res) => {
     try {
         const userId = req.userId;
-        const type = req.query; // types like -> note, tweet, video,..
-
-        const filter:any = { userId : userId};
-        if(type){
+        const type = req.query.type as string;
+        const filter: any = { userId: userId };
+        if (type) {
             filter.type = type;
         }
+
         const content = await contentModel
-        .find(filter)
-        .select('title link content type tags createdAt updatedAt')
-        .populate("userId", "username");
+            .find(filter)
+            .select('title link content type tags createdAt updatedAt')
+            .populate("userId", "username");
 
         res.json({
             content
@@ -195,60 +195,60 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
 
 
 app.delete("/api/v1/content/:id", userMiddleware, async (req, res) => {
-  try {
-    const contentId = req.params.id;
-    if (!contentId || contentId === "undefined") {
-      return res.status(400).json({ message: "Invalid content ID provided" });
-    }
-    const result = await contentModel.deleteOne({
-      _id: contentId,
-      userId: req.userId,
-    });
+    try {
+        const contentId = req.params.id;
+        if (!contentId || contentId === "undefined") {
+            return res.status(400).json({ message: "Invalid content ID provided" });
+        }
+        const result = await contentModel.deleteOne({
+            _id: contentId,
+            userId: req.userId,
+        });
 
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: "Content not found or unauthorized" });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "Content not found or unauthorized" });
+        }
+        res.json({ message: "Deleted successfully" });
+    } catch (error) {
+        console.error("Delete error:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
-    res.json({ message: "Deleted successfully" });
-  } catch (error) {
-    console.error("Delete error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
 });
 
 app.get("/api/v1/user", userMiddleware, async (req, res) => {
-    try{
+    try {
         const user = await userModel.findById(req.userId).select("username");
-        if(!user){
+        if (!user) {
             return res.status(404).json({
-                message : "User not found"
+                message: "User not found"
             })
         }
         res.status(200).json({
-            username : user.username
+            username: user.username
         });
-    } catch (error){
+    } catch (error) {
         return res.status(500).json({
-            error : "Internal Server Error"
+            error: "Internal Server Error"
         })
     }
 })
 
-app.post("/api/v1/brain/share",userMiddleware, async (req, res) => {
+app.post("/api/v1/brain/share", userMiddleware, async (req, res) => {
 
     try {
-        const share = req.body.share===true || req.body.share==="true";
+        const share = req.body.share === true || req.body.share === "true";
 
         if (share) {
             const hash = helper(10);
             await LinkModel.findOneAndUpdate(
-               { userId: req.userId },
-               { hash: hash },
-               { upsert : true, new : true }
+                { userId: req.userId },
+                { hash: hash },
+                { upsert: true, new: true }
             );
 
             res.json({
-                message: "Share link created", 
-                hash : hash
+                message: "Share link created",
+                hash: hash
             })
         } else {
             await LinkModel.deleteMany({
@@ -256,7 +256,7 @@ app.post("/api/v1/brain/share",userMiddleware, async (req, res) => {
             });
             res.json({
                 message: "Removed Link",
-                share : false
+                share: false
             });
         }
     }
