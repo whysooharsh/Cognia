@@ -170,9 +170,16 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
 app.get("/api/v1/content", userMiddleware, async (req, res) => {
     try {
         const userId = req.userId;
-        const content = await contentModel.find({
-            userId: userId
-        }).select('title link content type tags createdAt updatedAt').populate("userId", "username");
+        const type = req.query; // types like -> note, tweet, video,..
+
+        const filter:any = { userId : userId};
+        if(type){
+            filter.type = type;
+        }
+        const content = await contentModel
+        .find(filter)
+        .select('title link content type tags createdAt updatedAt')
+        .populate("userId", "username");
 
         res.json({
             content

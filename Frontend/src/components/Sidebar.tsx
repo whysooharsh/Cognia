@@ -1,7 +1,6 @@
 import { DocIcon } from "../icons/DocIcon";
 import { Youtube } from "../icons/VideoIcon";
 import { XIcon } from "../icons/XIcon";
-import { HashIcon } from "../icons/HashIcon";
 import { MainLogo } from "../icons/MainLogo";
 import { SidebarIcon } from "../icons/SidebarIcon";
 import { ShareLink } from "../icons/ShareLink";
@@ -15,11 +14,13 @@ import axios from "axios";
 interface SidebarProps {
     isOpen: boolean;
     setIsOpen: (val: boolean) => void;
+    onFilterSelect : (val:string|any) => void;
+    selectedType : string | null;
 }
 
 
 
-export function SideBar({ isOpen, setIsOpen }: SidebarProps) {
+export function SideBar({ isOpen, setIsOpen, onFilterSelect,selectedType }: SidebarProps) {
 
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
@@ -52,11 +53,11 @@ export function SideBar({ isOpen, setIsOpen }: SidebarProps) {
 
 
     const menuItems = [
-        { icon: <DocIcon />, label: "Notes" },
-        { icon: <Youtube />, label: "Video" },
-        { icon: <XIcon />, label: "Tweet" },
-        { icon: <ShareLink />, label: "Links" },
-        { icon: <HashIcon />, label: "Tags" },
+        { icon: <DocIcon />, label: "Notes", type : "note" },
+        { icon: <Youtube />, label: "Video", type : "video" },
+        { icon: <XIcon />, label: "Tweet", type : "tweet" },
+        { icon: <ShareLink />, label: "Links", type : "link" },
+
     ];
 
     return (
@@ -80,8 +81,9 @@ export function SideBar({ isOpen, setIsOpen }: SidebarProps) {
                 {menuItems.map((item, idx) => (
                     <div
                         key={idx}
+                        onClick={() => onFilterSelect(item.type)}
                         className={`flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out
-                                ${isOpen ? "" : "justify-center"}`
+                                ${isOpen ? "" : "justify-center"} ${selectedType===item.type? "bg-gray-300 font-semibold" : "hover:bg-gray-200"}`
 
                         }
                     >
@@ -107,7 +109,7 @@ export function SideBar({ isOpen, setIsOpen }: SidebarProps) {
                 {isOpen && (
                     <button
                         onClick={handleClick}
-                        className="p-2 hover:bg-gray-200 rounded-lg transition-colors duration-200 text-gray-600 hover:text-red-600"
+                        className="p-2 hover:bg-gray-200 rounded-sm transition-colors duration-200 text-gray-600 hover:text-red-600"
                     >
                         {<LogoutIcon />}
                     </button>

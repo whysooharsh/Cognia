@@ -24,10 +24,10 @@ const Navbar: React.FC = () => {
   }, [lastScrollY]);
 
   const navItems = [
-    { name: "Home", href: "#home" },
-    { name: "Features", href: "#features" },
+    { name: "Home", href: "/" },
+    { name: "Features", href: "/" },
     { name: "Dashboard", href: "/dashboard" },
-    { name: "Contact", href: "/contact"},
+    { name: "Contact", href: "/"},
   ];
 
   return (
