@@ -101,7 +101,7 @@ export function Signup() {
                  <div className="h-screen w-screen backdrop-blur-lg bg-white/20 fixed top-0 left-0 flex justify-center items-center z-50">
                     <div className="bg-white text-gray-900 p-10 rounded-2xl shadow-lg relative max-w-sm w-full flex flex-col items-center">
                         <h2 className="text-xl font-semibold mb-3 text-center text-red-500">
-                            Oops, your brainwave got scrambled.
+                            Error! 
                         </h2>
                         <p className="text-sm text-gray-400 text-center mb-6">
                             {errorMessage || "Something went wrong. Please try signing up again."}

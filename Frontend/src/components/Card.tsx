@@ -6,6 +6,7 @@ import { XIcon } from "../icons/XIcon";
 import axios from "axios";
 import { BACKEND_URL } from "./config";
 import { ShareLink } from "../icons/ShareLink";
+import { toast } from "react-hot-toast";
 
 interface CardProps {
   id: string;
@@ -19,8 +20,8 @@ interface CardProps {
 }
 
 export function Card({ id, title, link, type, content, tags, onDelete, isSharedView = false }: CardProps) {
- 
-  useEffect(() => {
+
+  useEffect(() => { 
     if (type === "twitter" && (window as any).twttr?.widgets) {
       (window as any).twttr.widgets.load();
     }
@@ -104,6 +105,24 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${BACKEND_URL}/api/v1/content/${id}`, {
+        headers : {Authorization : token}
+      });
+
+      toast.success("Content deleted successfully!");
+      
+      if (onDelete) {
+        onDelete(id);
+      }
+    }
+    catch (error){
+      toast.error("Failed to delete content");
+    }
+  }
+
   return (
     <div className={getCardClasses()}>
       <div className="flex justify-between items-center">
@@ -114,24 +133,7 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
         {!isSharedView && (
           <div className="flex items-center gap-3 text-gray-600">
             <button
-              onClick={async () => {
-                try {
-                  const token = localStorage.getItem("token");
-                  await axios.delete(`${BACKEND_URL}/api/v1/content/${id}`, {
-                    headers: {
-                      Authorization: token,
-                    }
-                  });
-                  alert("Deleted successfully!");
-
-                  if (onDelete) {
-                    onDelete(id);
-                  }
-                } catch (error) {
-                  console.error("Delete failed", error);
-                  alert("Failed to delete content");
-                }
-              }}
+              onClick={handleDelete}
               className="hover:text-red-500 transition-colors"
             >
               <DeleteIcon />

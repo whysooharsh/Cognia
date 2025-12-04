@@ -6,7 +6,14 @@ import './App.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Toaster position="top-right" />
+    <Toaster 
+      position="top-right" 
+      toastOptions={{
+        style: {
+          marginTop: '60px',
+        },
+      }}
+    />
     <App />
   </StrictMode>,
 )
