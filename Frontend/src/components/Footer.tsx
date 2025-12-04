@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-300 text-gray-900 overflow-hidden relative">
+    <div className="min-h-screen bg-gradient-to-b from-gray-200/10 to-gray-300 text-gray-700 overflow-hidden relative">
       <div className="relative z-10 flex flex-col min-h-screen pl-6 md:pl-20">
         <div className="flex-1 flex flex-col justify-center md:px-16 lg:px-20 max-w-4xl">
           <div className="mb-4">
-            <p className="text-gray-500 text-sm md:text-base font-medium tracking-wide uppercase">
+            <p className="text-gray-400 text-sm md:text-base font-medium tracking-wide uppercase">
               DIVE INTO THE FUTURE
             </p>
           </div>

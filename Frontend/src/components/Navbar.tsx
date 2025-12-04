@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { FiSun, FiMoon } from "react-icons/fi";
-
 
 const Navbar: React.FC = () => {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
-
   const controlNavbar = () => {
     if (typeof window !== "undefined") {
       if (window.scrollY > lastScrollY && window.scrollY > 50) {
@@ -18,14 +14,6 @@ const Navbar: React.FC = () => {
     }
   };
 
-  const applyDarkMode = (isDark: boolean) => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -34,18 +22,6 @@ const Navbar: React.FC = () => {
     }
   }, [lastScrollY]);
 
-  useEffect(() => {
-    const stored: boolean = localStorage.getItem("theme") === "dark";
-    setDarkMode(stored);
-    applyDarkMode(stored);
-  }, [])
-
-  const toggleTheme = () => {
-    const newTheme = !darkMode;
-    setDarkMode(newTheme);
-    applyDarkMode(newTheme);
-    localStorage.setItem("theme", newTheme ? "dark" : "light");
-  }
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -60,8 +36,8 @@ const Navbar: React.FC = () => {
         }`}
     >
       <div className="mx-auto max-w-4xl px-4">
-        <div className="flex justify-evenly items-center h-14 bg-white/80 dark:bg-neutral-900 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 rounded-xl shadow-sm ">
-          <nav className="flex space-x-8 text-sm font-medium text-neutral-950 dark:text-gray-300">
+        <div className="flex justify-evenly items-center h-14 bg-white dark:bg-black backdrop-blur-md border-b border-gray-100 dark:border-gray-700 rounded-xl shadow-sm ">
+          <nav className="flex space-x-8 text-sm font-medium text-neutral-950 dark:text-neutral-50">
             {navItems.map((item) =>
 
               <a
@@ -74,14 +50,6 @@ const Navbar: React.FC = () => {
               </a>
             )}
           </nav>
-
-          <button 
-            onClick={toggleTheme}
-            className="p-2 rounded-lg hover:bg-gray-00 dark:hover:bg-gray-950 transition-colors text-gray-700 dark:text-gray-300"
-            aria-label="Toggle theme"
-          >
-            {darkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
-          </button>
 
         </div>
       </div>

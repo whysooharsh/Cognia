@@ -59,8 +59,8 @@ export default function Home() {
         </svg>
       ),
       buttonText: "Start Collaborating",
-      bgColor: "bg-blue-100",
-      iconColor: "text-blue-600",
+      bgColor: "bg-gray-300",
+      iconColor: "text-neutral-600",
     },
     {
       title: "Embed Anything",
@@ -79,8 +79,8 @@ export default function Home() {
         </svg>
       ),
       buttonText: "Explore Embeds",
-      bgColor: "bg-green-100",
-      iconColor: "text-green-600",
+      bgColor: "bg-gray-300",
+      iconColor: "text-neutral-600",
     },
     {
       title: "Secure & Private",
@@ -99,8 +99,8 @@ export default function Home() {
         </svg>
       ),
       buttonText: "Learn Security",
-      bgColor: "bg-rose-100",
-      iconColor: "text-rose-600",
+      bgColor: "bg-gray-300",
+      iconColor: "text-neutral-600",
     },
     {
       title: "Smart Organization",
@@ -123,17 +123,65 @@ export default function Home() {
         </svg>
       ),
       buttonText: "Get Organized",
-      bgColor: "bg-amber-100",
-      iconColor: "text-amber-600",
+      bgColor: "bg-gray-300",
+      iconColor: "text-neutral-600",
     },
   ];
 
 
   return (
-    <div className="font-inter dark:bg-black bg-gradient-to-br from-purple-100 to-blue-50 text-gray-900 ">
+    <div className="min-h-screen w-full relative font-inter bg-gradient-to-br from-gray-50 to-gray-200 text-gray-900">
+      {/* {dotted bg gradient component} */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, #e7e5e4 1px, transparent 1px),
+            linear-gradient(to bottom, #e7e5e4 1px, transparent 1px)
+          `,
+          backgroundSize: "20px 20px",
+          backgroundPosition: "0 0, 0 0",
+          maskImage: `
+            repeating-linear-gradient(
+              to right,
+              black 0px,
+              black 3px,
+              transparent 3px,
+              transparent 8px
+            ),
+            repeating-linear-gradient(
+              to bottom,
+              black 0px,
+              black 3px,
+              transparent 3px,
+              transparent 8px
+            ),
+            radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)
+          `,
+          WebkitMaskImage: `
+            repeating-linear-gradient(
+              to right,
+              black 0px,
+              black 3px,
+              transparent 3px,
+              transparent 8px
+            ),
+            repeating-linear-gradient(
+              to bottom,
+              black 0px,
+              black 3px,
+              transparent 3px,
+              transparent 8px
+            ),
+            radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)
+          `,
+          maskComposite: "intersect",
+          WebkitMaskComposite: "source-in",
+        }}
+      />
       <Navbar />
 
-      <section className="pt-20 sm:pt-28">
+      <section className="relative z-10 pt-20 sm:pt-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-lg text-gray-600">
             Your Second Brain for Clarity & Focus
@@ -143,7 +191,7 @@ export default function Home() {
             <br />
             <span className="lg:text-6xl py-1 block">turn them into</span>
             <span className="relative inline-flex mt-2">
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-rose-400 via-orange-300 to-amber-300 blur-lg opacity-30"></span>
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-neutral-600 via-neutral-300 to-neutral-600 blur-lg opacity-30"></span>
               <span className="relative">actionable insights</span>
             </span>
           </div>
@@ -177,8 +225,8 @@ export default function Home() {
          
            <div className="relative mx-auto lg:max-w-4xl px-6">
             <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
-               <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-rose-400 to-red-600 rounded-full opacity-60 blur-xl"></div>
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-orange-400 to-pink-600-600 rounded-full opacity-50 blur-xl"></div>
+               <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-neutral-400 to-neutral-600 rounded-full opacity-60 blur-xl"></div>
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-neutral-400 to-neutral-600-600 rounded-full opacity-50 blur-xl"></div>
               
               <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg">
                 <iframe 
@@ -197,7 +245,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section id="features" className="bg-gray-50 py-24">
+      <section id="features" className="relative z-10 bg-gray-200/20 py-24">
         <div className="max-w-5xl mx-auto text-center px-6">
           <span className="inline-block text-sm font-medium uppercase tracking-wide text-gray-500">
             Why Cognia?
@@ -226,7 +274,7 @@ export default function Home() {
           </div>
         </div>  
       </section>
-      <section id="contact"><Footer /></section>
+      <section id="contact" className="relative z-10"><Footer /></section>
 
     </div>
   );
