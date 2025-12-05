@@ -136,8 +136,8 @@ export default function Home() {
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: `
-            linear-gradient(to right, #e7e5e4 1px, transparent 1px),
-            linear-gradient(to bottom, #e7e5e4 1px, transparent 1px)
+            linear-gradient(to right, #a8a29e 1px, transparent 1px),
+            linear-gradient(to bottom, #a8a29e 1px, transparent 1px)
           `,
           backgroundSize: "20px 20px",
           backgroundPosition: "0 0, 0 0",

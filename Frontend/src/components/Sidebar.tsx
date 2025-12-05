@@ -14,13 +14,13 @@ import axios from "axios";
 interface SidebarProps {
     isOpen: boolean;
     setIsOpen: (val: boolean) => void;
-    onFilterSelect : (val:string|any) => void;
-    selectedType : string | null;
+    onFilterSelect: (val: string | any) => void;
+    selectedType: string | null;
 }
 
 
 
-export function SideBar({ isOpen, setIsOpen, onFilterSelect,selectedType }: SidebarProps) {
+export function SideBar({ isOpen, setIsOpen, onFilterSelect, selectedType }: SidebarProps) {
 
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
@@ -37,7 +37,7 @@ export function SideBar({ isOpen, setIsOpen, onFilterSelect,selectedType }: Side
                 const userData = response.data;
                 console.log(userData);
                 setUsername(userData.username);
-            } catch(err){
+            } catch (err) {
                 console.error(err);
             }
         }
@@ -53,27 +53,29 @@ export function SideBar({ isOpen, setIsOpen, onFilterSelect,selectedType }: Side
 
 
     const menuItems = [
-        { icon: <DocIcon />, label: "Notes", type : "note" },
-        { icon: <Youtube />, label: "Video", type : "video" },
-        { icon: <XIcon />, label: "Tweet", type : "tweet" },
-        { icon: <ShareLink />, label: "Links", type : "link" },
+        { icon: <DocIcon />, label: "Notes", type: "note" },
+        { icon: <Youtube />, label: "Video", type: "youtube" },
+        { icon: <XIcon />, label: "Tweet", type: "twitter" },
+        { icon: <ShareLink />, label: "Links", type: "link" },
 
     ];
 
     return (
-        <div className={`h-screen ${isOpen ? "w-72" : "w-16"} bg-white fixed left-0 top-0 hidden md:flex md:flex-col border border-black/20 p-4 backdrop-blur-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out`}>
+        <div className={`h-screen ${isOpen ? "w-72" : "w-16"} bg-white fixed left-0 top-0 hidden md:flex md:flex-col border border-black/20 p-4 backdrop-blur-2xl overflow-hidden shadow-2xl transition-all duration-600 ease-in-out`}>
 
             <div className="flex items-center justify-between">
                 {isOpen && (
                     <div className="flex items-center gap-2 text-xl font-medium">
-                        <div className="text-gray-600 ">
+                        <div className="text-gray-700 ">
                             <MainLogo />
                         </div>
                         <span className="">Cognia</span>
                     </div>
                 )}
-                <div className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 cursor-pointer rounded-full ml-auto hover:rotate-180 transition-transform duration-500"
+                <div className={`w-8 h-8 flex items-center justify-center hover:bg-gray-200 cursor-pointer rounded-full ml-auto transition-transform duration-600
+                    ${isOpen ? "rotate-0" : "rotate-180"} `}
                     onClick={() => setIsOpen(!isOpen)}>
+
                     <SidebarIcon />
                 </div>
             </div>
@@ -83,13 +85,15 @@ export function SideBar({ isOpen, setIsOpen, onFilterSelect,selectedType }: Side
                         key={idx}
                         onClick={() => onFilterSelect(item.type)}
                         className={`flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out
-                                ${isOpen ? "" : "justify-center"} ${selectedType===item.type? "bg-gray-300 font-semibold" : "hover:bg-gray-200"}`
+                                ${isOpen ? "" : "justify-center"} ${selectedType === item.type ? "bg-gray-300 font-semibold" : "hover:bg-gray-200"}`
 
                         }
                     >
-                        <div className="text-lg">{item.icon}</div>
+                        <div className="text-lg text-gray-500">{item.icon}</div>
                         {isOpen && (
-                            <span className="font-medium group-hover:text-indigo-500 text-neutral-500 transition-all ease-in-out">{item.label}</span>
+                            <span className="text-gray-700 group-hover:text-indigo-500 transition-colors duration-300 font-medium">
+                                {item.label}
+                            </span>
                         )}
                     </div>
                 ))}

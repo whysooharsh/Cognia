@@ -312,6 +312,46 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
     }
 })
 
+app.get("/api/v1/search", userMiddleware, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const q = req.query.q as string;
+
+        console.log("Search request received:", { userId, query: q });
+
+        if (!q || q.trim() === "") {
+            console.log("Empty query, returning empty results");
+            return res.json({
+                results: []
+            });
+        }
+
+        const searchRegex = new RegExp(q.trim(), "i");
+
+        const results = await contentModel.find({
+            userId,
+            $or: [
+                { title: searchRegex },
+                { content: searchRegex },
+                { link: searchRegex }
+            ]
+        });
+
+        console.log(`Search found ${results.length} results`);
+
+        return res.json({
+            results: results
+        });
+
+    }
+    catch (error) {
+        console.error("Search error:", error);
+        res.status(500).json({
+            message: "Internal Server error",
+        })
+    }
+})
+
 export const connectDB = async () => {
     try {
         await mongoose.connect(MONGODB_URI);

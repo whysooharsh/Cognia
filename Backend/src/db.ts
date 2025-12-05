@@ -16,7 +16,14 @@ const contentSchema = new Schema ({
     tags : [{type : mongoose.Types.ObjectId, ref : 'Tag'}], 
     type : String,
     userId : {type : mongoose.Types.ObjectId, ref : 'User', required : true} 
-})
+}, { timestamps: true })
+
+contentSchema.index( {
+    title : "text", 
+    content : "text", 
+    link : "text", 
+    tags : "text",
+});
 
 export const contentModel = mongoose.model("Content", contentSchema);
 
