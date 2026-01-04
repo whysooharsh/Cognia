@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
@@ -37,6 +38,19 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ title, desc, icon, buttonText
 
 
 export default function Home() {
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isVideoModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isVideoModalOpen]);
+
   const features = [
     {
       title: "Shared Brain",
@@ -202,7 +216,10 @@ export default function Home() {
               Start Organizing
             </Link>
 
-            <button className="px-6 py-3 text-lg font-bold text-gray-900 border-2 border-gray-300 rounded-xl hover:bg-gray-900 hover:text-white transition flex items-center justify-center">
+            <button 
+              onClick={() => setIsVideoModalOpen(true)}
+              className="px-6 py-3 text-lg font-bold text-gray-900 border-2 border-gray-300 rounded-xl hover:bg-gray-900 hover:text-white transition flex items-center justify-center"
+            >
               <svg
                 className="w-5 h-5 mr-2"
                 viewBox="0 0 18 18"
@@ -222,21 +239,20 @@ export default function Home() {
         </div>
 
         <div className="relative mt-12 pb-12">
-         
-           <div className="relative mx-auto lg:max-w-4xl px-6">
+          <div className="relative mx-auto lg:max-w-4xl px-6">
             <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
-               <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-neutral-400 to-neutral-600 rounded-full opacity-60 blur-xl"></div>
+              <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-neutral-400 to-neutral-600 rounded-full opacity-60 blur-xl"></div>
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-neutral-400 to-neutral-600-600 rounded-full opacity-50 blur-xl"></div>
               
-              <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg">
-                <iframe 
-                  className="w-full h-full"
-                  src="https://www.youtube-nocookie.com/embed/47ARX-6srGk?si=D_KL0PcK0UxlYSJm&amp;controls=0" 
-                  title="YouTube video player" 
-                  frameBorder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                  referrerPolicy="strict-origin-when-cross-origin" 
-                  allowFullScreen
+              <div 
+                className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg cursor-pointer transition-transform "
+                onClick={() => setIsVideoModalOpen(true)}
+              >
+                <iframe
+                  src="https://player.cloudinary.com/embed/?cloud_name=dlvjrvhak&public_id=cursorful-video-1767530346250_lgohot&profile=cld-looping"
+                  className="w-full h-full pointer-events-none"
+                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                  frameBorder="0"
                 ></iframe>
               </div>
               
@@ -244,6 +260,36 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {isVideoModalOpen && (
+          <div 
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black backdrop-blur-sm p-4"
+            onClick={() => setIsVideoModalOpen(false)}
+          >
+            <div 
+              className="relative w-full max-w-5xl bg-gray-900 rounded-2xl shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setIsVideoModalOpen(false)}
+                className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-black/10 hover:bg-black/20 rounded-full transition-colors"
+              >
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <div className="relative w-full" style={{ aspectRatio: '640 / 360' }}>
+                <iframe
+                  src="https://player.cloudinary.com/embed/?cloud_name=dlvjrvhak&public_id=cursorful-video-1767530346250_lgohot&profile=cld-looping"
+                  className="absolute inset-0 w-full h-full"
+                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                  frameBorder="0"
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
       <section id="features" className="relative z-10 bg-gray-200/20 py-24">
         <div className="max-w-5xl mx-auto text-center px-6">
