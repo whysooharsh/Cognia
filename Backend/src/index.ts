@@ -17,6 +17,7 @@ app.use(cors({
     origin: [
         "https://cognia-jet.vercel.app",
         "http://localhost:5173",
+        "https://cognia-x.vercel.app",
 
     ],
     credentials: true,
