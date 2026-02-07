@@ -1,12 +1,13 @@
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { DocIcon } from "../icons/DocIcon";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Youtube } from "../icons/VideoIcon";
 import { XIcon } from "../icons/XIcon";
 import axios from "axios";
 import { BACKEND_URL } from "./config";
 import { ShareLink } from "../icons/ShareLink";
 import { toast } from "react-hot-toast";
+import MDEditor from "@uiw/react-md-editor";
 
 interface CardProps {
   id: string;
@@ -17,9 +18,10 @@ interface CardProps {
   tags?: string[];
   onDelete?: (id: string) => void;
   isSharedView?: boolean;
+  onExpand?: () => void;
 }
 
-export function Card({ id, title, link, type, content, tags, onDelete, isSharedView = false }: CardProps) {
+export function Card({ id, title, link, type, content, tags, onDelete, isSharedView = false, onExpand }: CardProps) {
 
   useEffect(() => { 
     if (type === "twitter" && (window as any).twttr?.widgets) {
@@ -28,7 +30,7 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
   }, [type]);
 
   const getCardClasses = () => {
-    return "rounded-xl bg-white shadow-sm p-4 flex flex-col space-y-4 border border-gray-200 w-full h-fit";
+    return "group rounded-xl bg-white shadow-sm hover:shadow-xl p-5 flex flex-col space-y-4 border border-gray-200 hover:border-gray-300 w-full h-fit transition-all duration-200 hover:scale-[1.02]";
   };
 
   const renderContent = () => {
@@ -63,10 +65,20 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
 
  if (type === "note") {
     return (
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-2">  
-        <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
-          {content  || 'No content available'}
-        </p>
+      <div
+        className="bg-gray-50 p-4 rounded-lg border border-gray-200 max-h-48 overflow-hidden relative cursor-pointer"
+        onClick={onExpand}
+        data-color-mode="light"
+      >
+        <MDEditor.Markdown
+          source={content || "No content available"}
+          style={{ background: "transparent", fontSize: "0.875rem" }}
+        />
+        {content && content.length > 200 && (
+          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-gray-50 to-transparent flex items-end justify-center pb-1">
+            <span className="text-xs text-gray-500 font-medium">Click to expand</span>
+          </div>
+        )}
       </div>
     );
   }
@@ -125,20 +137,21 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
 
   return (
     <div className={getCardClasses()}>
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2 text-gray-600">
-          {getIconType()}
-          <h3 className="text-sm font-medium text-gray-800">{title}</h3>
+      <div className="flex justify-between items-start gap-3">
+        <div className="flex items-center gap-2.5 text-gray-600 flex-1">
+          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
+            {getIconType()}
+          </div>
+          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 flex-1">{title}</h3>
         </div>
         {!isSharedView && (
-          <div className="flex items-center gap-3 text-gray-600">
-            <button
-              onClick={handleDelete}
-              className="hover:text-red-500 transition-colors"
-            >
-              <DeleteIcon />
-            </button>
-          </div>
+          <button
+            onClick={handleDelete}
+            className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600 transition-all"
+            title="Delete"
+          >
+            <DeleteIcon />
+          </button>
         )}
       </div>
 
@@ -146,11 +159,11 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
 
       <div className="mt-auto space-y-3">
         {tags && tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {tags.map((tag, i) => (
               <span
                 key={i}
-                className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full"
+                className="bg-gray-100 text-gray-700 text-xs px-2.5 py-1 rounded-md font-medium hover:bg-gray-200 transition-colors"
               >
                 #{tag}
               </span>

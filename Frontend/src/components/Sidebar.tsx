@@ -35,7 +35,6 @@ export function SideBar({ isOpen, setIsOpen, onFilterSelect, selectedType }: Sid
                     },
                 });
                 const userData = response.data;
-                console.log(userData);
                 setUsername(userData.username);
             } catch (err) {
                 console.error(err);
@@ -54,72 +53,84 @@ export function SideBar({ isOpen, setIsOpen, onFilterSelect, selectedType }: Sid
 
     const menuItems = [
         { icon: <DocIcon />, label: "Notes", type: "note" },
-        { icon: <Youtube />, label: "Video", type: "youtube" },
-        { icon: <XIcon />, label: "Tweet", type: "twitter" },
+        { icon: <Youtube />, label: "Videos", type: "youtube" },
+        { icon: <XIcon />, label: "Tweets", type: "twitter" },
         { icon: <ShareLink />, label: "Links", type: "link" },
 
     ];
 
     return (
-        <div className={`h-screen ${isOpen ? "w-72" : "w-16"} bg-white fixed left-0 top-0 hidden md:flex md:flex-col border border-black/20 p-4 backdrop-blur-2xl overflow-hidden shadow-2xl transition-all duration-600 ease-in-out`}>
+        <div className={`h-screen ${isOpen ? "w-64" : "w-20"} bg-white fixed left-0 top-0 hidden md:flex md:flex-col border-r border-gray-200 transition-all duration-300 ease-in-out z-20`}>
 
-            <div className="flex items-center justify-between">
-                {isOpen && (
-                    <div className="flex items-center gap-2 text-xl font-medium">
-                        <div className="text-gray-700 ">
-                            <MainLogo />
+            <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+                {isOpen ? (
+                    <>
+                        <div className="flex items-center gap-2 text-xl font-semibold text-gray-900">
+                            <div className="text-gray-700">
+                                <MainLogo />
+                            </div>
+                            <span>Cognia</span>
                         </div>
-                        <span className="">Cognia</span>
-                    </div>
+                        <button
+                            onClick={() => setIsOpen(false)}
+                            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                            title="Collapse sidebar"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                    </>
+                ) : (
+                    <button
+                        onClick={() => setIsOpen(true)}
+                        className="flex justify-center w-full hover:bg-gray-100 rounded-lg p-2 transition-colors"
+                        title="Expand sidebar"
+                    >
+                        <MainLogo />
+                    </button>
                 )}
-                <div className={`w-8 h-8 flex items-center justify-center hover:bg-gray-200 cursor-pointer rounded-full ml-auto transition-transform duration-600
-                    ${isOpen ? "rotate-0" : "rotate-180"} `}
-                    onClick={() => setIsOpen(!isOpen)}>
-
-                    <SidebarIcon />
-                </div>
             </div>
-            <div className="flex flex-col mt-8 gap-4">
+
+            <div className="flex flex-col flex-1 py-6 px-3 gap-2">
                 {menuItems.map((item, idx) => (
-                    <div
+                    <button
                         key={idx}
                         onClick={() => onFilterSelect(item.type)}
-                        className={`flex items-center px-3 py-2 gap-3 rounded-xl hover:bg-gray-200 transition-all ease-in-out
-                                ${isOpen ? "" : "justify-center"} ${selectedType === item.type ? "bg-gray-300 font-semibold" : "hover:bg-gray-200"}`
-
-                        }
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all cursor-pointer
+                                ${isOpen ? "" : "justify-center"} ${selectedType === item.type 
+                                    ? "bg-gray-900 text-white shadow-md" 
+                                    : "text-gray-700 hover:bg-gray-100"}`}
+                        title={item.label}
                     >
-                        <div className="text-lg text-gray-500">{item.icon}</div>
+                        <div className="text-xl">{item.icon}</div>
                         {isOpen && (
-                            <span className="text-gray-700 group-hover:text-indigo-500 transition-colors duration-300 font-medium">
+                            <span className="text-sm font-medium">
                                 {item.label}
                             </span>
                         )}
-                    </div>
+                    </button>
                 ))}
-
-
             </div>
 
-            <div className={`mt-auto pt-4 border-t border-gray-300 flex items-center gap-3 px-3  ${isOpen ? "justify-between" : "justify-center"}`}>
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+            <div className="border-t border-gray-200 p-4">
+                <div className={`flex items-center gap-3 ${isOpen ? "" : "justify-center"}`}>
+                    <div className="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-gray-700">
                         <UserIcon />
                     </div>
                     {isOpen && (
-                        <span className="text-sm font-medium text-gray-900">{username || "User"}</span>
+                        <div className="flex-1 flex items-center justify-between">
+                            <span className="text-sm font-medium text-gray-900 truncate">{username || "User"}</span>
+                            <button
+                                onClick={handleClick}
+                                className="p-1.5 hover:bg-red-50 rounded-lg transition-colors text-gray-600 hover:text-red-600"
+                                title="Logout"
+                            >
+                                <LogoutIcon />
+                            </button>
+                        </div>
                     )}
                 </div>
-                {isOpen && (
-                    <button
-                        onClick={handleClick}
-                        className="p-2 hover:bg-gray-200 rounded-sm transition-colors duration-200 text-gray-600 hover:text-red-600"
-                    >
-                        {<LogoutIcon />}
-                    </button>
-
-                )}
-
             </div>
 
         </div>

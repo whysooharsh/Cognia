@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/cli": "^4.1.11",
     "@tailwindcss/vite": "^4.1.11",
+    "@uiw/react-md-editor": "^4.0.11",
     "axios": "^1.10.0",
     "framer-motion": "^12.23.6",
     "react": "^19.1.0",

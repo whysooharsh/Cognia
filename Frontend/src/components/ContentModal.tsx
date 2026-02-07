@@ -4,6 +4,7 @@ import { ButtonCustom } from "./Button";
 import { InputComponent } from "./Input";
 import { useRef, useState } from "react";
 import { BACKEND_URL } from "./config";
+import MDEditor from "@uiw/react-md-editor";
 
 const ContentType = {
   Youtube: "youtube",
@@ -85,7 +86,7 @@ export function CreateContentModal({
     <>
       {open && (
         <div className="h-screen w-screen backdrop-blur-lg bg-white/20 fixed top-0 left-0 flex justify-center items-center z-50">
-          <div className="bg-white text-gray-900 p-10 rounded-2xl shadow-lg relative max-w-md w-full flex flex-col items-center">
+          <div className="bg-white text-gray-900 p-10 rounded-2xl shadow-lg relative max-w-lg w-full flex flex-col items-center">
             <button
               onClick={onClose}
               className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition"
@@ -117,16 +118,18 @@ export function CreateContentModal({
               )}
 
               {type === "note" && (
-                <div>
+                <div data-color-mode="light">
                   <label className="block text-xs text-gray-500 mb-1">
-                    Content
+                    Content (Markdown supported)
                   </label>
-                  <textarea
+                  <MDEditor
                     value={noteContent}
-                    onChange={(e) => setNoteContent(e.target.value)}
-                    placeholder="Write your note..."
-                    rows={4}
-                    className="w-full px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 resize-vertical"
+                    onChange={(val) => setNoteContent(val || "")}
+                    preview="edit"
+                    height={200}
+                    textareaProps={{
+                      placeholder: "Write your note in markdown...\n\n# Heading\n**bold** *italic* ~~strikethrough~~\n- list item\n> blockquote\n`code`",
+                    }}
                   />
                 </div>
               )}
