@@ -27,7 +27,7 @@ export function Dashboard() {
   const token = localStorage.getItem("token");
 
   const { results: searchResults, loading: searchLoading } = useDebouncedSearch(query, token, 300);
-  const { workspaces, createWorkspace, deleteWorkspace, refresh: refreshWorkspaces } = useWorkspaces();
+  const { workspaces, createWorkspace, deleteWorkspace } = useWorkspaces();
 
   const { contents, refresh } = useContent();
   const dataToDisplay =
