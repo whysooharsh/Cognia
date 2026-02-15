@@ -4,9 +4,11 @@ import { ShareIcon } from "../icons/ShareIcon";
 import { Card } from "../components/Card";
 import { CreateContentModal } from "../components/ContentModal";
 import { ContentDetailModal } from "../components/ContentDetailModal";
+import { CreateWorkspaceModal } from "../components/CreateWorkspaceModal";
 import { useState } from "react";
 import { SideBar } from "../components/Sidebar";
 import { useContent } from "../hooks/useContent";
+import { useWorkspaces } from "../hooks/useWorkspaces";
 import { useDebouncedSearch } from "../hooks/useDebouncedSearch";
 import SearchBar from "../components/SearchBar";
 import axios from "axios";
@@ -20,9 +22,12 @@ export function Dashboard() {
   const [filter, setFilter] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [expandedItem, setExpandedItem] = useState<any | null>(null);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
+  const [wsModalOpen, setWsModalOpen] = useState(false);
   const token = localStorage.getItem("token");
 
   const { results: searchResults, loading: searchLoading } = useDebouncedSearch(query, token, 300);
+  const { workspaces, createWorkspace, deleteWorkspace, refresh: refreshWorkspaces } = useWorkspaces();
 
   const { contents, refresh } = useContent();
   const dataToDisplay =
@@ -30,9 +35,11 @@ export function Dashboard() {
       ? searchResults || []
       : contents || [];
 
-  const displayed = dataToDisplay.filter(
-    (item: any) => !filter || item.type === filter
-  );
+  const displayed = dataToDisplay.filter((item: any) => {
+    const matchesType = !filter || item.type === filter;
+    const matchesWorkspace = !selectedWorkspace || item.workspaceId === selectedWorkspace;
+    return matchesType && matchesWorkspace;
+  });
 
   function handleFilterSelect(type: string) {
     setFilter(prev => (prev === type ? null : type));
@@ -48,7 +55,20 @@ export function Dashboard() {
       <div className="block lg:hidden">
         <Navbar />
       </div>
-      <SideBar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} onFilterSelect={handleFilterSelect} selectedType={filter} />
+      <SideBar
+        isOpen={sidebarOpen}
+        setIsOpen={setSidebarOpen}
+        onFilterSelect={handleFilterSelect}
+        selectedType={filter}
+        workspaces={workspaces}
+        selectedWorkspace={selectedWorkspace}
+        onWorkspaceSelect={setSelectedWorkspace}
+        onCreateWorkspace={() => setWsModalOpen(true)}
+        onDeleteWorkspace={async (id) => {
+          await deleteWorkspace(id);
+          if (selectedWorkspace === id) setSelectedWorkspace(null);
+        }}
+      />
       <div
         className={`min-h-screen mt-16 lg:mt-0 transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : "lg:ml-20"
           }`}
@@ -61,6 +81,16 @@ export function Dashboard() {
           }}
           onContentAdded={() => {
             refresh();
+          }}
+          workspaces={workspaces}
+          defaultWorkspaceId={selectedWorkspace}
+        />
+
+        <CreateWorkspaceModal
+          open={wsModalOpen}
+          onClose={() => setWsModalOpen(false)}
+          onCreate={async (name, color) => {
+            await createWorkspace(name, color);
           }}
         />
 

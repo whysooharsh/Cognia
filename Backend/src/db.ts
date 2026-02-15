@@ -20,9 +20,8 @@ const contentSchema = new Schema ({
     tags : [{type : mongoose.Types.ObjectId, ref : 'Tag'}], 
     type : String,
     userId : {type : mongoose.Types.ObjectId, ref : 'User', required : true},
-    // For plugin-created custom content types
+    workspaceId : {type : mongoose.Types.ObjectId, ref : 'Workspace', default : null},
     customFields: {type: Schema.Types.Mixed, default: {}},
-    // Track which plugin created this if applicable
     createdByPlugin: {type: String, default: null},
 }, { timestamps: true })
 
@@ -42,7 +41,6 @@ const linkSchema = new Schema ({
 
 export const LinkModel = mongoose.model("Links", linkSchema);
 
-// Plugin Schema - stores plugin definitions
 const pluginSchema = new Schema({
     manifest: {
         id: {type: String, required: true, unique: true},
@@ -57,7 +55,7 @@ const pluginSchema = new Schema({
         actions: [Schema.Types.Mixed],
         contentTypes: [Schema.Types.Mixed],
     },
-    code: {type: String, required: true}, // Sandboxed JavaScript
+    code: {type: String, required: true}, 
     isActive: {type: Boolean, default: true},
     isPublic: {type: Boolean, default: false},
     createdBy: {type : mongoose.Types.ObjectId, ref : 'User', required : true},
@@ -67,7 +65,6 @@ const pluginSchema = new Schema({
 
 export const PluginModel = mongoose.model("Plugin", pluginSchema);
 
-// User Plugin Installation Schema - tracks which plugins users have installed
 const userPluginSchema = new Schema({
     userId: {type : mongoose.Types.ObjectId, ref : 'User', required : true},
     pluginId: {type : mongoose.Types.ObjectId, ref : 'Plugin', required : true},
@@ -80,7 +77,6 @@ userPluginSchema.index({ userId: 1, pluginId: 1 }, { unique: true });
 
 export const UserPluginModel = mongoose.model("UserPlugin", userPluginSchema);
 
-// Workspace/Collection Schema for organizing content
 const workspaceSchema = new Schema({
     name: {type: String, required: true},
     description: String,

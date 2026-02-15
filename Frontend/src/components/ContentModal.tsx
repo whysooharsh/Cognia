@@ -5,6 +5,7 @@ import { InputComponent } from "./Input";
 import { useRef, useState } from "react";
 import { BACKEND_URL } from "./config";
 import MDEditor from "@uiw/react-md-editor";
+import type { Workspace } from "../hooks/useWorkspaces";
 
 const ContentType = {
   Youtube: "youtube",
@@ -19,16 +20,21 @@ export function CreateContentModal({
   open,
   onClose,
   onContentAdded,
+  workspaces = [],
+  defaultWorkspaceId = null,
 }: {
   open: boolean;
   onClose: () => void;
   onContentAdded: () => void;
+  workspaces?: Workspace[];
+  defaultWorkspaceId?: string | null;
 }) {
   const [noteContent, setNoteContent] = useState("");
   const [error, setError] = useState("");
   const titleRef = useRef<HTMLInputElement>(null);
   const linkRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<ContentTypeVal>(ContentType.Youtube);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(defaultWorkspaceId);
 
   function addContent() {
     const title = titleRef.current?.value;
@@ -40,6 +46,7 @@ export function CreateContentModal({
     const payload: any = {
       title,
       type,
+      ...(selectedWorkspace && { workspaceId: selectedWorkspace }),
     };
 
     if (!title?.trim()) {
@@ -148,6 +155,22 @@ export function CreateContentModal({
                 ))}
               </div>
             </div>
+
+            {workspaces.length > 0 && (
+              <div className="text-left w-full mt-2">
+                <label className="block text-sm font-medium text-gray-700 px-2 mb-1.5">Workspace</label>
+                <select
+                  value={selectedWorkspace || ""}
+                  onChange={(e) => setSelectedWorkspace(e.target.value || null)}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-gray-400"
+                >
+                  <option value="">No workspace</option>
+                  {workspaces.map((ws) => (
+                    <option key={ws._id} value={ws._id}>{ws.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className="pt-6">
               <ButtonCustom

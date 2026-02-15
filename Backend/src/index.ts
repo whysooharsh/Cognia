@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import { contentModel, LinkModel, userModel } from "./db";
+import { contentModel, LinkModel, userModel, WorkspaceModel } from "./db";
 import { JWT_SECRET, MONGODB_URI, PORT } from "./config";
 import { userMiddleware } from "./middleware";
 import { helper } from "./util";
@@ -153,7 +153,8 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
             ...(imageUrl && { imageUrl }),
             type,
             userId: req.userId,
-            tags: req.body.tags || []
+            tags: req.body.tags || [],
+            ...(req.body.workspaceId && { workspaceId: req.body.workspaceId })
         });
         return res.json({
             message: "content added",
@@ -172,14 +173,18 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
     try {
         const userId = req.userId;
         const type = req.query.type as string;
+        const workspaceId = req.query.workspaceId as string;
         const filter: any = { userId: userId };
         if (type) {
             filter.type = type;
         }
+        if (workspaceId) {
+            filter.workspaceId = workspaceId;
+        }
 
         const content = await contentModel
             .find(filter)
-            .select('title link content type tags createdAt updatedAt')
+            .select('title link content type tags workspaceId createdAt updatedAt')
             .populate("userId", "username");
 
         res.json({
@@ -352,6 +357,62 @@ app.get("/api/v1/search", userMiddleware, async (req, res) => {
         })
     }
 })
+
+app.get("/api/v1/workspaces", userMiddleware, async (req, res) => {
+    try {
+        const workspaces = await WorkspaceModel.find({ userId: req.userId }).sort({ createdAt: -1 });
+        res.json({ workspaces });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+app.post("/api/v1/workspaces", userMiddleware, async (req, res) => {
+    try {
+        const { name, color, icon } = req.body;
+        if (!name?.trim()) {
+            return res.status(400).json({ message: "Workspace name is required" });
+        }
+        const workspace = await WorkspaceModel.create({
+            name: name.trim(),
+            color: color || "#6B7280",
+            icon: icon || "folder",
+            userId: req.userId,
+        });
+        res.status(201).json({ workspace });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+app.put("/api/v1/workspaces/:id", userMiddleware, async (req, res) => {
+    try {
+        const { name, color, icon } = req.body;
+        const updated = await WorkspaceModel.findOneAndUpdate(
+            { _id: req.params.id, userId: req.userId },
+            { ...(name && { name }), ...(color && { color }), ...(icon && { icon }) },
+            { new: true }
+        );
+        if (!updated) return res.status(404).json({ message: "Workspace not found" });
+        res.json({ workspace: updated });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+app.delete("/api/v1/workspaces/:id", userMiddleware, async (req, res) => {
+    try {
+        const result = await WorkspaceModel.deleteOne({ _id: req.params.id, userId: req.userId });
+        if (result.deletedCount === 0) return res.status(404).json({ message: "Workspace not found" });
+        await contentModel.updateMany(
+            { workspaceId: req.params.id, userId: req.userId },
+            { $unset: { workspaceId: "" } }
+        );
+        res.json({ message: "Workspace deleted" });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 export const connectDB = async () => {
     try {
