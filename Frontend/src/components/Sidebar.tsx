@@ -2,7 +2,6 @@ import { DocIcon } from "../icons/DocIcon";
 import { Youtube } from "../icons/VideoIcon";
 import { XIcon } from "../icons/XIcon";
 import { MainLogo } from "../icons/MainLogo";
-import { SidebarIcon } from "../icons/SidebarIcon";
 import { ShareLink } from "../icons/ShareLink";
 import { UserIcon } from "../icons/UserIcon";
 import { LogoutIcon } from "../icons/LogoutIcon";
