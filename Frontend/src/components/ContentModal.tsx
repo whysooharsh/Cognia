@@ -35,6 +35,26 @@ export function CreateContentModal({
   const linkRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<ContentTypeVal>(ContentType.Youtube);
   const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(defaultWorkspaceId);
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+
+  function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if ((e.key === "Enter" || e.key === ",") && tagInput.trim()) {
+      e.preventDefault();
+      const newTag = tagInput.trim().replace(/^#/, "");
+      if (newTag && !tags.includes(newTag)) {
+        setTags((prev) => [...prev, newTag]);
+      }
+      setTagInput("");
+    }
+    if (e.key === "Backspace" && !tagInput && tags.length > 0) {
+      setTags((prev) => prev.slice(0, -1));
+    }
+  }
+
+  function removeTag(tag: string) {
+    setTags((prev) => prev.filter((t) => t !== tag));
+  }
 
   function addContent() {
     const title = titleRef.current?.value;
@@ -46,6 +66,7 @@ export function CreateContentModal({
     const payload: any = {
       title,
       type,
+      tags,
       ...(selectedWorkspace && { workspaceId: selectedWorkspace }),
     };
 
@@ -78,6 +99,8 @@ export function CreateContentModal({
         if (titleRef.current) titleRef.current.value = "";
         if (linkRef.current) linkRef.current.value = "";
         setNoteContent("");
+        setTags([]);
+        setTagInput("");
         setError("");
         onContentAdded();
         onClose();
@@ -153,6 +176,35 @@ export function CreateContentModal({
                     onClick={() => setType(val)}
                   />
                 ))}
+              </div>
+            </div>
+
+            {/* Tags input */}
+            <div className="text-left w-full mt-3">
+              <label className="block text-sm font-medium text-gray-700 px-2 mb-1.5">Tags</label>
+              <div className="flex flex-wrap items-center gap-1.5 w-full px-3 py-2 rounded-lg border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-gray-400 min-h-[42px]">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-md"
+                  >
+                    #{tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  </span>
+                ))}
+                <input
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleTagKeyDown}
+                  placeholder={tags.length === 0 ? "Type a tag and press Enter" : ""}
+                  className="flex-1 min-w-[80px] text-sm outline-none bg-transparent"
+                />
               </div>
             </div>
 

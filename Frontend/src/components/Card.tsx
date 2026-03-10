@@ -16,12 +16,15 @@ interface CardProps {
   content: string;
   type: "twitter" | "youtube" | "note" | "link";
   tags?: string[];
+  isPinned?: boolean;
   onDelete?: (id: string) => void;
   isSharedView?: boolean;
   onExpand?: () => void;
+  onPin?: (id: string) => void;
+  onTagClick?: (tag: string) => void;
 }
 
-export function Card({ id, title, link, type, content, tags, onDelete, isSharedView = false, onExpand }: CardProps) {
+export function Card({ id, title, link, type, content, tags, isPinned = false, onDelete, isSharedView = false, onExpand, onPin, onTagClick }: CardProps) {
 
   useEffect(() => { 
     if (type === "twitter" && (window as any).twttr?.widgets) {
@@ -30,7 +33,7 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
   }, [type]);
 
   const getCardClasses = () => {
-    return "group rounded-xl bg-white shadow-sm hover:shadow-xl p-5 flex flex-col space-y-4 border border-gray-200 hover:border-gray-300 w-full h-fit transition-all duration-200 hover:scale-[1.02]";
+    return `group relative rounded-xl bg-white shadow-sm hover:shadow-xl p-5 flex flex-col space-y-4 border ${isPinned ? "border-amber-300 ring-1 ring-amber-100" : "border-gray-200 hover:border-gray-300"} w-full h-fit transition-all duration-200 hover:scale-[1.02]`;
   };
 
   const renderContent = () => {
@@ -137,6 +140,13 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
 
   return (
     <div className={getCardClasses()}>
+      {isPinned && (
+        <div className="absolute top-2 right-2 text-amber-500">
+          <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+            <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
+          </svg>
+        </div>
+      )}
       <div className="flex justify-between items-start gap-3">
         <div className="flex items-center gap-2.5 text-gray-600 flex-1">
           <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-colors">
@@ -145,13 +155,28 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
           <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 flex-1">{title}</h3>
         </div>
         {!isSharedView && (
-          <button
-            onClick={handleDelete}
-            className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600 transition-all"
-            title="Delete"
-          >
-            <DeleteIcon />
-          </button>
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={() => onPin?.(id)}
+              className={`p-2 rounded-lg transition-all ${
+                isPinned
+                  ? "text-amber-500 hover:bg-amber-50"
+                  : "opacity-0 group-hover:opacity-100 text-gray-400 hover:text-amber-500 hover:bg-amber-50"
+              }`}
+              title={isPinned ? "Unpin" : "Pin to top"}
+            >
+              <svg className="w-4 h-4" fill={isPinned ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
+              </svg>
+            </button>
+            <button
+              onClick={handleDelete}
+              className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600 transition-all"
+              title="Delete"
+            >
+              <DeleteIcon />
+            </button>
+          </div>
         )}
       </div>
 
@@ -161,12 +186,13 @@ export function Card({ id, title, link, type, content, tags, onDelete, isSharedV
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {tags.map((tag, i) => (
-              <span
+              <button
                 key={i}
-                className="bg-gray-100 text-gray-700 text-xs px-2.5 py-1 rounded-md font-medium hover:bg-gray-200 transition-colors"
+                onClick={() => onTagClick?.(tag)}
+                className="bg-gray-100 text-gray-700 text-xs px-2.5 py-1 rounded-md font-medium hover:bg-gray-900 hover:text-white transition-colors cursor-pointer"
               >
                 #{tag}
-              </span>
+              </button>
             ))}
           </div>
         )}

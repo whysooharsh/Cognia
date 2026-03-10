@@ -3,6 +3,11 @@ import { PlusIcon } from "../icons/PlusIcon";
 import { ShareIcon } from "../icons/ShareIcon";
 import { Card } from "../components/Card";
 import { CreateContentModal } from "../components/ContentModal";
+import { DeleteIcon } from "../icons/DeleteIcon";
+import { DocIcon } from "../icons/DocIcon";
+import { Youtube } from "../icons/VideoIcon";
+import { XIcon } from "../icons/XIcon";
+import { ShareLink } from "../icons/ShareLink";
 import { ContentDetailModal } from "../components/ContentDetailModal";
 import { CreateWorkspaceModal } from "../components/CreateWorkspaceModal";
 import { useState } from "react";
@@ -24,10 +29,13 @@ export function Dashboard() {
   const [expandedItem, setExpandedItem] = useState<any | null>(null);
   const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
   const [wsModalOpen, setWsModalOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "a-z" | "z-a">("newest");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const token = localStorage.getItem("token");
 
   const { results: searchResults, loading: searchLoading } = useDebouncedSearch(query, token, 300);
-  const { workspaces, createWorkspace, deleteWorkspace, refresh: refreshWorkspaces } = useWorkspaces();
+  const { workspaces, createWorkspace, deleteWorkspace } = useWorkspaces();
 
   const { contents, refresh } = useContent();
   const dataToDisplay =
@@ -35,11 +43,43 @@ export function Dashboard() {
       ? searchResults || []
       : contents || [];
 
-  const displayed = dataToDisplay.filter((item: any) => {
+  const filtered = dataToDisplay.filter((item: any) => {
     const matchesType = !filter || item.type === filter;
     const matchesWorkspace = !selectedWorkspace || item.workspaceId === selectedWorkspace;
-    return matchesType && matchesWorkspace;
+    const matchesTag = !activeTag || (item.tags && item.tags.includes(activeTag));
+    return matchesType && matchesWorkspace && matchesTag;
   });
+
+  // Sort: pinned items always first, then by chosen sort
+  const displayed = [...filtered].sort((a: any, b: any) => {
+    // Pinned always on top
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    // Then apply sort
+    switch (sortBy) {
+      case "oldest":
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case "a-z":
+        return (a.title || "").localeCompare(b.title || "");
+      case "z-a":
+        return (b.title || "").localeCompare(a.title || "");
+      case "newest":
+      default:
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  });
+
+  async function handlePin(id: string) {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.patch(`${BACKEND_URL}/api/v1/content/${id}/pin`, {}, {
+        headers: { Authorization: token },
+      });
+      refresh();
+    } catch (error) {
+      console.error("Pin error:", error);
+    }
+  }
 
   function handleFilterSelect(type: string) {
     setFilter(prev => (prev === type ? null : type));
@@ -119,8 +159,41 @@ export function Dashboard() {
               <SearchBar value={query} onChange={setQuery} placeholder="Search your brain..." />
             </div>
 
-            {/* Action Buttons on right */}
-            <div className="flex gap-3">
+            {/* Sort + View Toggle + Action Buttons on right */}
+            <div className="flex items-center gap-3">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+              >
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="a-z">Title A → Z</option>
+                <option value="z-a">Title Z → A</option>
+              </select>
+
+              {/* View toggle */}
+              <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 transition-colors ${viewMode === "grid" ? "bg-gray-900 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
+                  title="Grid view"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 transition-colors ${viewMode === "list" ? "bg-gray-900 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}
+                  title="List view"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
+
               <ButtonCustom
                 onClick={() => setModalOpen(true)}
                 varient="primary"
@@ -148,6 +221,24 @@ export function Dashboard() {
               />
             </div>
           </div>
+
+          {/* Active tag filter indicator */}
+          {activeTag && (
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-sm text-gray-500">Filtering by tag:</span>
+              <span className="inline-flex items-center gap-1.5 bg-gray-900 text-white text-xs font-medium px-3 py-1 rounded-full">
+                #{activeTag}
+                <button
+                  onClick={() => setActiveTag(null)}
+                  className="hover:bg-white/20 rounded-full p-0.5 transition-colors"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            </div>
+          )}
         </div>
         {/* Content Grid */}
         <div className="px-6 py-8">
@@ -178,9 +269,10 @@ export function Dashboard() {
                   )}
                 </div>
               ) : (
+                viewMode === "grid" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {displayed.map((item) => {
-                    const { type, link, title, content, tags, _id } = item;
+                    const { type, link, title, content, tags, _id, isPinned } = item;
 
                     return (
                       <div key={_id} className="h-fit">
@@ -191,13 +283,91 @@ export function Dashboard() {
                           link={link}
                           content={content}
                           tags={tags}
+                          isPinned={isPinned}
                           onDelete={() => refresh()}
                           onExpand={() => setExpandedItem(item)}
+                          onPin={handlePin}
+                          onTagClick={(tag) => setActiveTag(prev => prev === tag ? null : tag)}
                         />
                       </div>
                     );
                   })}
                 </div>
+                ) : (
+                <div className="flex flex-col gap-2">
+                  {displayed.map((item) => {
+                    const { type, link, title, tags, _id, isPinned, createdAt } = item;
+                    return (
+                      <div
+                        key={_id}
+                        onClick={() => setExpandedItem(item)}
+                        className={`group flex items-center gap-4 px-4 py-3 rounded-lg border bg-white hover:shadow-md transition-all cursor-pointer ${
+                          isPinned ? "border-amber-300 ring-1 ring-amber-100" : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        {/* Pin indicator */}
+                        {isPinned && (
+                          <svg className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 fill-current" viewBox="0 0 24 24">
+                            <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
+                          </svg>
+                        )}
+
+                        {/* Type icon */}
+                        <div className="w-7 h-7 rounded-md bg-gray-100 flex items-center justify-center text-gray-600 flex-shrink-0 group-hover:bg-gray-900 group-hover:text-white transition-colors">
+                          {type === "youtube" ? <Youtube /> : type === "twitter" ? <XIcon /> : type === "link" ? <ShareLink /> : <DocIcon />}
+                        </div>
+
+                        {/* Title */}
+                        <span className="text-sm font-medium text-gray-900 flex-1 truncate">{title}</span>
+
+                        {/* Tags */}
+                        {tags && tags.length > 0 && (
+                          <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0">
+                            {tags.slice(0, 3).map((tag: string, i: number) => (
+                              <button
+                                key={i}
+                                onClick={(e) => { e.stopPropagation(); setActiveTag(prev => prev === tag ? null : tag); }}
+                                className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded font-medium hover:bg-gray-900 hover:text-white transition-colors"
+                              >
+                                #{tag}
+                              </button>
+                            ))}
+                            {tags.length > 3 && <span className="text-xs text-gray-400">+{tags.length - 3}</span>}
+                          </div>
+                        )}
+
+                        {/* Type badge */}
+                        <span className="text-xs text-gray-400 capitalize flex-shrink-0 hidden md:block">{type}</span>
+
+                        {/* Date */}
+                        <span className="text-xs text-gray-400 flex-shrink-0 hidden md:block w-20 text-right">
+                          {createdAt ? new Date(createdAt).toLocaleDateString() : ""}
+                        </span>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handlePin(_id); }}
+                            className={`p-1.5 rounded-md transition-colors ${isPinned ? "text-amber-500" : "text-gray-400 hover:text-amber-500"}`}
+                            title={isPinned ? "Unpin" : "Pin"}
+                          >
+                            <svg className="w-3.5 h-3.5" fill={isPinned ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                              <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); axios.delete(`${BACKEND_URL}/api/v1/content/${_id}`, { headers: { Authorization: localStorage.getItem("token") } }).then(() => refresh()); }}
+                            className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                            title="Delete"
+                          >
+                            <DeleteIcon />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                )
               )}
             </>
           )}

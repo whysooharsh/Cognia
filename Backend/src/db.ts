@@ -21,6 +21,7 @@ const contentSchema = new Schema ({
     type : String,
     userId : {type : mongoose.Types.ObjectId, ref : 'User', required : true},
     workspaceId : {type : mongoose.Types.ObjectId, ref : 'Workspace', default : null},
+    isPinned : {type : Boolean, default : false},
     customFields: {type: Schema.Types.Mixed, default: {}},
     createdByPlugin: {type: String, default: null},
 }, { timestamps: true })

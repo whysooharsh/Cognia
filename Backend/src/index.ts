@@ -21,7 +21,7 @@ app.use(cors({
 
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -184,7 +184,8 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
 
         const content = await contentModel
             .find(filter)
-            .select('title link content type tags workspaceId createdAt updatedAt')
+            .select('title link content type tags workspaceId isPinned createdAt updatedAt')
+            .sort({ isPinned: -1, createdAt: -1 })
             .populate("userId", "username");
 
         res.json({
@@ -217,6 +218,21 @@ app.delete("/api/v1/content/:id", userMiddleware, async (req, res) => {
         res.json({ message: "Deleted successfully" });
     } catch (error) {
         console.error("Delete error:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+app.patch("/api/v1/content/:id/pin", userMiddleware, async (req, res) => {
+    try {
+        const contentId = req.params.id;
+        const content = await contentModel.findOne({ _id: contentId, userId: req.userId });
+        if (!content) {
+            return res.status(404).json({ message: "Content not found" });
+        }
+        content.isPinned = !content.isPinned;
+        await content.save();
+        res.json({ message: content.isPinned ? "Pinned" : "Unpinned", isPinned: content.isPinned });
+    } catch (error) {
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
