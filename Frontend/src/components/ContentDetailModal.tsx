@@ -1,9 +1,10 @@
-import { CloseIcon } from "../icons/CloseIcon";
 import { useState } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import axios from "axios";
-import { BACKEND_URL } from "./config";
 import { toast } from "react-hot-toast";
+
+import { CloseIcon } from "../icons";
+import { BACKEND_URL } from "./config";
 
 interface ContentDetailModalProps {
   open: boolean;
@@ -72,7 +73,6 @@ export function ContentDetailModal({
         className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           {isEditing ? (
             <input
@@ -180,7 +180,6 @@ export function ContentDetailModal({
           ) : null}
         </div>
 
-        {/* Footer with tags */}
         {tags && tags.length > 0 && (
           <div className="px-6 py-3 border-t border-gray-200 flex flex-wrap gap-1.5">
             {tags.map((tag, i) => (

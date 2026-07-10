@@ -25,12 +25,14 @@ export const InputComponent = forwardRef<
   Props
 >((props, ref) => {
   const { placeholder, type = "text", ...rest } = props;
-  const baseClasses = `w-full px-4 py-2 rounded-md 
-                       border border-gray-300 
-                       text-sm text-gray-800 
-                       placeholder-gray-400 placeholder:text-sm
-                       focus:outline-none focus:ring-2 
-                       focus:ring-gray-400 focus:border-transparent`;
+  const baseClasses = `w-full px-4 py-2.5 rounded-xl 
+                       border border-ink/10 
+                       text-sm text-ink 
+                       bg-white/40 backdrop-blur-sm
+                       placeholder-ink/30 placeholder:text-sm
+                       focus:outline-none focus:ring-1 
+                       focus:ring-ink focus:border-transparent
+                       transition-all duration-150`;
 
   if (type === "textarea") {
     return (

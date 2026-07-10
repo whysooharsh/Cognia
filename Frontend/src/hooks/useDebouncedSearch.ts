@@ -19,7 +19,7 @@ export function useDebouncedSearch(query: string, token: string | null, delay = 
   const [error, setError] = useState<string | null>(null);
 
   const timer = useRef<number | null>(null);
-  const abortCtrl = useRef<AbortController | null>(null); // to cancel async ops
+  const abortCtrl = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (timer.current) {
@@ -49,13 +49,13 @@ export function useDebouncedSearch(query: string, token: string | null, delay = 
       try {
         console.log("Searching for:", query);
         console.log("Backend URL:", BACKEND_URL);
-        
+
         const res = await axios.get(`${BACKEND_URL}/api/v1/search`, {
           params: { q: query },
           headers: token ? { Authorization: token } : undefined,
           signal: abortCtrl.current.signal,
         });
-        
+
         console.log("Search response:", res.data);
         setResults(res.data.results || []);
       } catch (error: any) {
@@ -75,10 +75,10 @@ export function useDebouncedSearch(query: string, token: string | null, delay = 
 
     }, delay);
 
-    // cleanup 
+
 
     return () => {
-      if(timer.current){
+      if (timer.current) {
         window.clearTimeout(timer.current);
       }
     };

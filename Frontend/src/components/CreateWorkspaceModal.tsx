@@ -1,6 +1,7 @@
-import { CloseIcon } from "../icons/CloseIcon";
-import { ButtonCustom } from "./Button";
 import { useState } from "react";
+
+import { CloseIcon } from "../icons";
+import { ButtonCustom } from "./Button";
 
 const COLORS = [
   "#EF4444", // red
@@ -91,16 +92,14 @@ export function CreateWorkspaceModal({ open, onClose, onCreate }: CreateWorkspac
                 <button
                   key={c}
                   onClick={() => setColor(c)}
-                  className={`w-8 h-8 rounded-full transition-all ${
-                    color === c ? "ring-2 ring-offset-2 ring-gray-900 scale-110" : "hover:scale-110"
-                  }`}
+                  className={`w-8 h-8 rounded-full transition-all ${color === c ? "ring-2 ring-offset-2 ring-gray-900 scale-110" : "hover:scale-110"
+                    }`}
                   style={{ backgroundColor: c }}
                 />
               ))}
             </div>
           </div>
 
-          {/* Preview */}
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="w-5 h-5 rounded" style={{ backgroundColor: color }} />
             <span className="text-sm font-medium text-gray-700">{name || "Workspace Name"}</span>

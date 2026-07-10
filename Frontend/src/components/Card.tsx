@@ -1,13 +1,10 @@
-import { DeleteIcon } from "../icons/DeleteIcon";
-import { DocIcon } from "../icons/DocIcon";
 import { useEffect } from "react";
-import { Youtube } from "../icons/VideoIcon";
-import { XIcon } from "../icons/XIcon";
 import axios from "axios";
-import { BACKEND_URL } from "./config";
-import { ShareLink } from "../icons/ShareLink";
-import { toast } from "react-hot-toast";
 import MDEditor from "@uiw/react-md-editor";
+import { toast } from "react-hot-toast";
+
+import { DeleteIcon, DocIcon, ShareLink, XIcon, Youtube } from "../icons";
+import { BACKEND_URL } from "./config";
 
 interface CardProps {
   id: string;

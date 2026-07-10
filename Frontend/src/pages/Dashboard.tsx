@@ -1,25 +1,28 @@
-import { ButtonCustom } from "../components/Button";
-import { PlusIcon } from "../icons/PlusIcon";
-import { ShareIcon } from "../icons/ShareIcon";
-import { Card } from "../components/Card";
-import { CreateContentModal } from "../components/ContentModal";
-import { DeleteIcon } from "../icons/DeleteIcon";
-import { DocIcon } from "../icons/DocIcon";
-import { Youtube } from "../icons/VideoIcon";
-import { XIcon } from "../icons/XIcon";
-import { ShareLink } from "../icons/ShareLink";
-import { ContentDetailModal } from "../components/ContentDetailModal";
-import { CreateWorkspaceModal } from "../components/CreateWorkspaceModal";
 import { useState } from "react";
-import { SideBar } from "../components/Sidebar";
-import { useContent } from "../hooks/useContent";
-import { useWorkspaces } from "../hooks/useWorkspaces";
-import { useDebouncedSearch } from "../hooks/useDebouncedSearch";
-import SearchBar from "../components/SearchBar";
 import axios from "axios";
-import { BACKEND_URL } from "../components/config";
-import { showCopyToast } from "../components/CopyToast";
-import Navbar from "../components/Navbar";
+
+import {
+  BACKEND_URL,
+  ButtonCustom,
+  Card,
+  ContentDetailModal,
+  CreateContentModal,
+  CreateWorkspaceModal,
+  Navbar,
+  SearchBar,
+  SideBar,
+  showCopyToast,
+} from "../components";
+import { useContent, useDebouncedSearch, useWorkspaces } from "../hooks";
+import {
+  DeleteIcon,
+  DocIcon,
+  PlusIcon,
+  ShareIcon,
+  ShareLink,
+  XIcon,
+  Youtube,
+} from "../icons";
 
 export function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -50,12 +53,9 @@ export function Dashboard() {
     return matchesType && matchesWorkspace && matchesTag;
   });
 
-  // Sort: pinned items always first, then by chosen sort
   const displayed = [...filtered].sort((a: any, b: any) => {
-    // Pinned always on top
     if (a.isPinned && !b.isPinned) return -1;
     if (!a.isPinned && b.isPinned) return 1;
-    // Then apply sort
     switch (sortBy) {
       case "oldest":
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -91,7 +91,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <div className="block lg:hidden">
         <Navbar />
       </div>
@@ -151,15 +151,12 @@ export function Dashboard() {
           />
         )}
 
-        {/* Modern TOP BAR */}
         <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between gap-4">
-            {/* Search on left */}
             <div className="flex-1 max-w-2xl">
               <SearchBar value={query} onChange={setQuery} placeholder="Search your brain..." />
             </div>
 
-            {/* Sort + View Toggle + Action Buttons on right */}
             <div className="flex items-center gap-3">
               <select
                 value={sortBy}
@@ -172,7 +169,6 @@ export function Dashboard() {
                 <option value="z-a">Title Z → A</option>
               </select>
 
-              {/* View toggle */}
               <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
                 <button
                   onClick={() => setViewMode("grid")}
@@ -222,7 +218,6 @@ export function Dashboard() {
             </div>
           </div>
 
-          {/* Active tag filter indicator */}
           {activeTag && (
             <div className="mt-3 flex items-center gap-2">
               <span className="text-sm text-gray-500">Filtering by tag:</span>
@@ -240,7 +235,6 @@ export function Dashboard() {
             </div>
           )}
         </div>
-        {/* Content Grid */}
         <div className="px-6 py-8">
           {searchLoading ? (
             <div className="flex justify-center items-center py-20">
@@ -270,109 +264,100 @@ export function Dashboard() {
                 </div>
               ) : (
                 viewMode === "grid" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {displayed.map((item) => {
-                    const { type, link, title, content, tags, _id, isPinned } = item;
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {displayed.map((item) => {
+                      const { type, link, title, content, tags, _id, isPinned } = item;
 
-                    return (
-                      <div key={_id} className="h-fit">
-                        <Card
-                          id={_id}
-                          title={title}
-                          type={type}
-                          link={link}
-                          content={content}
-                          tags={tags}
-                          isPinned={isPinned}
-                          onDelete={() => refresh()}
-                          onExpand={() => setExpandedItem(item)}
-                          onPin={handlePin}
-                          onTagClick={(tag) => setActiveTag(prev => prev === tag ? null : tag)}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
+                      return (
+                        <div key={_id} className="h-fit">
+                          <Card
+                            id={_id}
+                            title={title}
+                            type={type}
+                            link={link}
+                            content={content}
+                            tags={tags}
+                            isPinned={isPinned}
+                            onDelete={() => refresh()}
+                            onExpand={() => setExpandedItem(item)}
+                            onPin={handlePin}
+                            onTagClick={(tag) => setActiveTag(prev => prev === tag ? null : tag)}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
                 ) : (
-                <div className="flex flex-col gap-2">
-                  {displayed.map((item) => {
-                    const { type, link, title, tags, _id, isPinned, createdAt } = item;
-                    return (
-                      <div
-                        key={_id}
-                        onClick={() => setExpandedItem(item)}
-                        className={`group flex items-center gap-4 px-4 py-3 rounded-lg border bg-white hover:shadow-md transition-all cursor-pointer ${
-                          isPinned ? "border-amber-300 ring-1 ring-amber-100" : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        {/* Pin indicator */}
-                        {isPinned && (
-                          <svg className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 fill-current" viewBox="0 0 24 24">
-                            <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
-                          </svg>
-                        )}
-
-                        {/* Type icon */}
-                        <div className="w-7 h-7 rounded-md bg-gray-100 flex items-center justify-center text-gray-600 flex-shrink-0 group-hover:bg-gray-900 group-hover:text-white transition-colors">
-                          {type === "youtube" ? <Youtube /> : type === "twitter" ? <XIcon /> : type === "link" ? <ShareLink /> : <DocIcon />}
-                        </div>
-
-                        {/* Title */}
-                        <span className="text-sm font-medium text-gray-900 flex-1 truncate">{title}</span>
-
-                        {/* Tags */}
-                        {tags && tags.length > 0 && (
-                          <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0">
-                            {tags.slice(0, 3).map((tag: string, i: number) => (
-                              <button
-                                key={i}
-                                onClick={(e) => { e.stopPropagation(); setActiveTag(prev => prev === tag ? null : tag); }}
-                                className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded font-medium hover:bg-gray-900 hover:text-white transition-colors"
-                              >
-                                #{tag}
-                              </button>
-                            ))}
-                            {tags.length > 3 && <span className="text-xs text-gray-400">+{tags.length - 3}</span>}
-                          </div>
-                        )}
-
-                        {/* Type badge */}
-                        <span className="text-xs text-gray-400 capitalize flex-shrink-0 hidden md:block">{type}</span>
-
-                        {/* Date */}
-                        <span className="text-xs text-gray-400 flex-shrink-0 hidden md:block w-20 text-right">
-                          {createdAt ? new Date(createdAt).toLocaleDateString() : ""}
-                        </span>
-
-                        {/* Actions */}
-                        <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all">
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handlePin(_id); }}
-                            className={`p-1.5 rounded-md transition-colors ${isPinned ? "text-amber-500" : "text-gray-400 hover:text-amber-500"}`}
-                            title={isPinned ? "Unpin" : "Pin"}
-                          >
-                            <svg className="w-3.5 h-3.5" fill={isPinned ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                              <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
+                  <div className="flex flex-col gap-2">
+                    {displayed.map((item) => {
+                      const { type, title, tags, _id, isPinned, createdAt } = item;
+                      return (
+                        <div
+                          key={_id}
+                          onClick={() => setExpandedItem(item)}
+                          className={`group flex items-center gap-4 px-4 py-3 rounded-lg border bg-white hover:shadow-md transition-all cursor-pointer ${isPinned ? "border-amber-300 ring-1 ring-amber-100" : "border-gray-200 hover:border-gray-300"
+                            }`}
+                        >
+                          {isPinned && (
+                            <svg className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 fill-current" viewBox="0 0 24 24">
+                              <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" />
                             </svg>
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); axios.delete(`${BACKEND_URL}/api/v1/content/${_id}`, { headers: { Authorization: localStorage.getItem("token") } }).then(() => refresh()); }}
-                            className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                            title="Delete"
-                          >
-                            <DeleteIcon />
-                          </button>
+                          )}
+
+                          <div className="w-7 h-7 rounded-md bg-gray-100 flex items-center justify-center text-gray-600 flex-shrink-0 group-hover:bg-gray-900 group-hover:text-white transition-colors">
+                            {type === "youtube" ? <Youtube /> : type === "twitter" ? <XIcon /> : type === "link" ? <ShareLink /> : <DocIcon />}
+                          </div>
+
+                          <span className="text-sm font-medium text-gray-900 flex-1 truncate">{title}</span>
+
+                          {tags && tags.length > 0 && (
+                            <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0">
+                              {tags.slice(0, 3).map((tag: string, i: number) => (
+                                <button
+                                  key={i}
+                                  onClick={(e) => { e.stopPropagation(); setActiveTag(prev => prev === tag ? null : tag); }}
+                                  className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded font-medium hover:bg-gray-900 hover:text-white transition-colors"
+                                >
+                                  #{tag}
+                                </button>
+                              ))}
+                              {tags.length > 3 && <span className="text-xs text-gray-400">+{tags.length - 3}</span>}
+                            </div>
+                          )}
+
+                          <span className="text-xs text-gray-400 capitalize flex-shrink-0 hidden md:block">{type}</span>
+
+                          <span className="text-xs text-gray-400 flex-shrink-0 hidden md:block w-20 text-right">
+                            {createdAt ? new Date(createdAt).toLocaleDateString() : ""}
+                          </span>
+
+                          <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handlePin(_id); }}
+                              className={`p-1.5 rounded-md transition-colors ${isPinned ? "text-amber-500" : "text-gray-400 hover:text-amber-500"}`}
+                              title={isPinned ? "Unpin" : "Pin"}
+                            >
+                              <svg className="w-3.5 h-3.5" fill={isPinned ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); axios.delete(`${BACKEND_URL}/api/v1/content/${_id}`, { headers: { Authorization: localStorage.getItem("token") } }).then(() => refresh()); }}
+                              className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                              title="Delete"
+                            >
+                              <DeleteIcon />
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
                 )
               )}
             </>
           )}
         </div>
-
       </div>
     </div>
   );

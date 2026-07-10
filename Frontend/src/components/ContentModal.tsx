@@ -1,11 +1,12 @@
-import axios from "axios";
-import { CloseIcon } from "../icons/CloseIcon";
-import { ButtonCustom } from "./Button";
-import { InputComponent } from "./Input";
 import { useRef, useState } from "react";
-import { BACKEND_URL } from "./config";
+import axios from "axios";
 import MDEditor from "@uiw/react-md-editor";
-import type { Workspace } from "../hooks/useWorkspaces";
+
+import { CloseIcon } from "../icons";
+import type { Workspace } from "../hooks";
+import { ButtonCustom } from "./Button";
+import { BACKEND_URL } from "./config";
+import { InputComponent } from "./Input";
 
 const ContentType = {
   Youtube: "youtube",
@@ -14,7 +15,7 @@ const ContentType = {
   Link: "link",
 } as const;
 
-type ContentTypeVal = typeof ContentType[keyof typeof ContentType];
+type ContentTypeVal = (typeof ContentType)[keyof typeof ContentType];
 
 export function CreateContentModal({
   open,
@@ -34,7 +35,9 @@ export function CreateContentModal({
   const titleRef = useRef<HTMLInputElement>(null);
   const linkRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<ContentTypeVal>(ContentType.Youtube);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(defaultWorkspaceId);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(
+    defaultWorkspaceId,
+  );
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
 
@@ -60,7 +63,6 @@ export function CreateContentModal({
     const title = titleRef.current?.value;
     const link = linkRef.current?.value;
 
-    // Clear previous errors
     setError("");
 
     const payload: any = {
@@ -107,7 +109,10 @@ export function CreateContentModal({
       })
       .catch((err) => {
         console.error("Failed to add content:", err);
-        const errorMessage = err.response?.data?.message || err.message || "Unknown error occurred";
+        const errorMessage =
+          err.response?.data?.message ||
+          err.message ||
+          "Unknown error occurred";
         setError("Failed to add content: " + errorMessage);
       });
   }
@@ -132,7 +137,11 @@ export function CreateContentModal({
 
             {error && (
               <div className="w-full mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-red-700 text-sm" role="alert" aria-live="polite">
+                <p
+                  className="text-red-700 text-sm"
+                  role="alert"
+                  aria-live="polite"
+                >
                   {error}
                 </p>
               </div>
@@ -158,7 +167,8 @@ export function CreateContentModal({
                     preview="edit"
                     height={200}
                     textareaProps={{
-                      placeholder: "Write your note in markdown...\n\n# Heading\n**bold** *italic* ~~strikethrough~~\n- list item\n> blockquote\n`code`",
+                      placeholder:
+                        "Write your note in markdown...\n\n# Heading\n**bold** *italic* ~~strikethrough~~\n- list item\n> blockquote\n`code`",
                     }}
                   />
                 </div>
@@ -179,9 +189,10 @@ export function CreateContentModal({
               </div>
             </div>
 
-            {/* Tags input */}
             <div className="text-left w-full mt-3">
-              <label className="block text-sm font-medium text-gray-700 px-2 mb-1.5">Tags</label>
+              <label className="block text-sm font-medium text-gray-700 px-2 mb-1.5">
+                Tags
+              </label>
               <div className="flex flex-wrap items-center gap-1.5 w-full px-3 py-2 rounded-lg border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-gray-400 min-h-[42px]">
                 {tags.map((tag) => (
                   <span
@@ -194,7 +205,19 @@ export function CreateContentModal({
                       onClick={() => removeTag(tag)}
                       className="text-gray-400 hover:text-red-500 transition-colors"
                     >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
                     </button>
                   </span>
                 ))}
@@ -202,7 +225,9 @@ export function CreateContentModal({
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleTagKeyDown}
-                  placeholder={tags.length === 0 ? "Type a tag and press Enter" : ""}
+                  placeholder={
+                    tags.length === 0 ? "Type a tag and press Enter" : ""
+                  }
                   className="flex-1 min-w-[80px] text-sm outline-none bg-transparent"
                 />
               </div>
@@ -210,7 +235,9 @@ export function CreateContentModal({
 
             {workspaces.length > 0 && (
               <div className="text-left w-full mt-2">
-                <label className="block text-sm font-medium text-gray-700 px-2 mb-1.5">Workspace</label>
+                <label className="block text-sm font-medium text-gray-700 px-2 mb-1.5">
+                  Workspace
+                </label>
                 <select
                   value={selectedWorkspace || ""}
                   onChange={(e) => setSelectedWorkspace(e.target.value || null)}
@@ -218,7 +245,9 @@ export function CreateContentModal({
                 >
                   <option value="">No workspace</option>
                   {workspaces.map((ws) => (
-                    <option key={ws._id} value={ws._id}>{ws.name}</option>
+                    <option key={ws._id} value={ws._id}>
+                      {ws.name}
+                    </option>
                   ))}
                 </select>
               </div>
