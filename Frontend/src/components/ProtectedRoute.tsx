@@ -9,7 +9,7 @@ export function ProtectedRoute({children} : ProtectedRouteProps){
     const token = (() => {
         try {
             return localStorage.getItem("token");
-        } catch (error) {
+        } catch {
             return null;
         }
     })();

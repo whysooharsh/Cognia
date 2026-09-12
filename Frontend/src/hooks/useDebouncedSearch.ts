@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { BACKEND_URL } from "../components/config";
 import axios from "axios";
+import type { ContentType } from "../types/content";
 
 type ContentItem = {
   _id: string,
   title: string,
   content?: string,
   link?: string,
-  type?: string,
+  type: ContentType,
   tags?: string[],
+  workspaceId?: string | null,
+  isPinned?: boolean,
   createdAt?: string
 };
 
@@ -47,27 +50,26 @@ export function useDebouncedSearch(query: string, token: string | null, delay = 
       abortCtrl.current = new AbortController();
 
       try {
-        console.log("Searching for:", query);
-        console.log("Backend URL:", BACKEND_URL);
-
         const res = await axios.get(`${BACKEND_URL}/api/v1/search`, {
           params: { q: query },
           headers: token ? { Authorization: token } : undefined,
           signal: abortCtrl.current.signal,
         });
 
-        console.log("Search response:", res.data);
         setResults(res.data.results || []);
-      } catch (error: any) {
+      } catch (error: unknown) {
 
-        if (axios.isCancel?.(error)) {
+        if (axios.isCancel(error)) {
           //ignore
-        } else if (error?.name === "Cancelled Error " || error?.code == "ERR_Cancelled") {
-          // 
         } else {
-          console.error("Search error", error);
-          setError("Search failed");
-          setResults([]);
+          const err = error as { name?: string; code?: string };
+          if (err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
+            //
+          } else {
+            console.error("Search error", error);
+            setError("Search failed");
+            setResults([]);
+          }
         }
       } finally {
         setLoading(false);

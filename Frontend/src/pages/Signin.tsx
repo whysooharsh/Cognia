@@ -41,13 +41,14 @@ export function Signin() {
       setTimeout(() => {
         navigate("/dashboard");
       }, 1500);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setShowSuccessModal(false);
-      if (error.response) {
-        const status = error.response.status;
-        const message = error.response.data?.message;
+      const axiosErr = error as { response?: { status?: number; data?: { message?: string } } };
+      if (axiosErr.response) {
+        const status = axiosErr.response.status;
+        const message = axiosErr.response.data?.message;
 
-        if (status === 411) {
+        if (status === 404) {
           setErrorMessage("User doesn't exist. Please sign up first.");
         } else if (status === 403) {
           setErrorMessage("Incorrect password. Please try again.");

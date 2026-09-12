@@ -22,8 +22,9 @@ function PremiumCard({ item }: { item: Content }) {
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    if (item.type === "twitter" && (window as any).twttr?.widgets) {
-      (window as any).twttr.widgets.load();
+    if (item.type === "twitter") {
+      const twttr = (window as unknown as { twttr?: { widgets?: { load: () => void } } }).twttr;
+      twttr?.widgets?.load();
     }
   }, [item.type]);
 
@@ -247,8 +248,9 @@ export default function SharedBrain() {
           `${BACKEND_URL}/api/v1/brain/${shareLink}`,
         );
         setData(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to load shared brain");
+      } catch (err: unknown) {
+        const axiosErr = err as { response?: { data?: { message?: string } } };
+        setError(axiosErr.response?.data?.message || "Failed to load shared brain");
       } finally {
         setLoading(false);
       }
