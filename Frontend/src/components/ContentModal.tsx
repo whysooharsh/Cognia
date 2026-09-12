@@ -65,7 +65,14 @@ export function CreateContentModal({
 
     setError("");
 
-    const payload: any = {
+    const payload: {
+      title?: string;
+      type: ContentTypeVal;
+      tags: string[];
+      link?: string;
+      content?: string;
+      workspaceId?: string;
+    } = {
       title,
       type,
       tags,

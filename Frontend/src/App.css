@@ -9,9 +9,6 @@
   --color-paper-dark: #0c0c0c;
   --color-ink: #1c1b17;
   --color-ink-muted: #52504a;
-  
-  --animate-blob: blob 9s infinite;
-  --animate-pulse-slow: pulse-slow 3s infinite;
 }
 
 @layer utilities {
@@ -23,41 +20,6 @@
     font-family: var(--font-serif);
     font-style: italic;
   }
-}
-
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-}
-
-@keyframes pulse-slow {
-  0%, 100% {
-    opacity: 0.2;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 rgba(28, 27, 23, 0); }
-  50% { box-shadow: 0 0 20px rgba(28, 27, 23, 0.15); }
-}
-
-button.premium-btn:hover {
-  animation: pulseGlow 1.5s infinite;
 }
 
 ::-webkit-scrollbar {

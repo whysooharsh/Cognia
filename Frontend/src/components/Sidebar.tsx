@@ -16,7 +16,7 @@ import { BACKEND_URL } from "./config";
 interface SidebarProps {
   isOpen: boolean;
   setIsOpen: (val: boolean) => void;
-  onFilterSelect: (val: string | any) => void;
+  onFilterSelect: (val: string) => void;
   selectedType: string | null;
   workspaces: Workspace[];
   selectedWorkspace: string | null;
@@ -63,8 +63,8 @@ export function SideBar({
 
   const menuItems = [
     { icon: <DocIcon />, label: "Notes", type: "note" },
-    { icon: <Youtube />, label: "Videos", type: "youtube" },
-    { icon: <XIcon />, label: "Tweets", type: "twitter" },
+    { icon: <Youtube />, label: "YouTube", type: "youtube" },
+    { icon: <XIcon />, label: "X / Twitter", type: "twitter" },
     { icon: <ShareLink />, label: "Links", type: "link" },
   ];
 
@@ -119,9 +119,9 @@ export function SideBar({
       </div>
 
       <div className="flex flex-col flex-1 py-6 px-3 gap-2 overflow-y-auto">
-        {menuItems.map((item, idx) => (
+        {menuItems.map((item) => (
           <button
-            key={idx}
+            key={item.type}
             onClick={() => onFilterSelect(item.type)}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all cursor-pointer
                                 ${isOpen ? "" : "justify-center"} ${

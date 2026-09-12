@@ -41,7 +41,7 @@ export function CreateWorkspaceModal({ open, onClose, onCreate }: CreateWorkspac
       setColor(COLORS[5]);
       setError("");
       onClose();
-    } catch (err) {
+    } catch {
       setError("Failed to create workspace");
     } finally {
       setLoading(false);

@@ -51,10 +51,11 @@ export function Signup() {
       setTimeout(() => {
         navigate("/signin");
       }, 1000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setShowErrorModal(true);
+      const axiosErr = error as { response?: { data?: { message?: string } } };
       setErrorMessage(
-        error.response?.data?.message || "Signup failed. Please try again.",
+        axiosErr.response?.data?.message || "Signup failed. Please try again.",
       );
     } finally {
       setIsLoading(false);

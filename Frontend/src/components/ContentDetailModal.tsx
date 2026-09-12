@@ -51,7 +51,7 @@ export function ContentDetailModal({
       toast.success("Content updated!");
       setIsEditing(false);
       onUpdated?.();
-    } catch (err) {
+    } catch {
       toast.error("Failed to update content");
     } finally {
       setSaving(false);

@@ -30,13 +30,10 @@ const saltRounds = 10;
 
 app.post("/api/v1/signup", async (req, res) => {
     try {
-        console.log("Signup request received:", req.body);
-
         const username = req.body.username;
         const password = req.body.password;
 
         if (!username || !password) {
-            console.log("Missing username or password in signup");
             return res.status(400).json({
                 message: "Username and password are required"
             });
@@ -44,8 +41,7 @@ app.post("/api/v1/signup", async (req, res) => {
 
         const existingUser = await userModel.findOne({ username });
         if (existingUser) {
-            console.log("User already exists:", username);
-            return res.status(411).json({
+            return res.status(409).json({
                 message: "User already exists"
             });
         }
@@ -66,21 +62,17 @@ app.post("/api/v1/signup", async (req, res) => {
     } catch (error) {
         console.error("Signup error:", error);
         res.status(500).json({
-            message: "Internal server error",
-            error: error instanceof Error ? error.message : "Unknown error"
+            message: "Internal server error"
         });
     }
 });
 app.post("/api/v1/signin", async (req, res) => {
 
     try {
-        console.log("Signin request received:", req.body);
-
         const username = req.body.username;
         const password = req.body.password;
 
         if (!username || !password) {
-            console.log("Missing username or password");
             return res.status(400).json({
                 message: "Username and password are required"
             })
@@ -88,8 +80,7 @@ app.post("/api/v1/signin", async (req, res) => {
 
         const existingUser = await userModel.findOne({ username });
         if (!existingUser) {
-            console.log("User not found:", username);
-            return res.status(411).json({
+            return res.status(404).json({
                 message: "User doesn't exist"
             });
         }
@@ -97,13 +88,12 @@ app.post("/api/v1/signin", async (req, res) => {
         const passOk = await bcrypt.compare(password, existingUser.password);
 
         if (!passOk) {
-            console.log("Password incorrect");
             return res.status(403).json({
                 message: "Wrong credentials"
             });
         }
 
-        const token = jwt.sign({ id: existingUser._id }, JWT_SECRET);
+        const token = jwt.sign({ id: existingUser._id }, JWT_SECRET, { expiresIn: "30d" });
 
         const response = {
             message: "Login successful",
@@ -114,7 +104,7 @@ app.post("/api/v1/signin", async (req, res) => {
 
 
     } catch (error) {
-        console.log("error signing up : ", error);
+        console.error("Signin error:", error);
         res.status(500).json({
             message: "Internal Server Error"
         });
@@ -222,6 +212,20 @@ app.delete("/api/v1/content/:id", userMiddleware, async (req, res) => {
     }
 });
 
+app.put("/api/v1/content/:id", userMiddleware, async (req, res) => {
+    try {
+        const updated = await contentModel.findOneAndUpdate(
+            { _id: req.params.id, userId: req.userId },
+            { ...(req.body.title !== undefined && { title: req.body.title }), ...(req.body.content !== undefined && { content: req.body.content }) },
+            { new: true }
+        );
+        if (!updated) return res.status(404).json({ message: "Content not found" });
+        res.json({ message: "Content updated", content: updated });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
 app.patch("/api/v1/content/:id/pin", userMiddleware, async (req, res) => {
     try {
         const contentId = req.params.id;
@@ -261,7 +265,15 @@ app.post("/api/v1/brain/share", userMiddleware, async (req, res) => {
         const share = req.body.share === true || req.body.share === "true";
 
         if (share) {
-            const hash = helper(10);
+            let hash = "";
+            for (let attempt = 0; attempt < 3; attempt++) {
+                hash = helper(10);
+                const existing = await LinkModel.findOne({ hash });
+                if (!existing) break;
+                if (attempt === 2) {
+                    return res.status(500).json({ message: "Internal Server Error" });
+                }
+            }
             await LinkModel.findOneAndUpdate(
                 { userId: req.userId },
                 { hash: hash },
@@ -283,7 +295,7 @@ app.post("/api/v1/brain/share", userMiddleware, async (req, res) => {
         }
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json({
             message: "Internal Server Error"
         });
@@ -297,8 +309,6 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
 
         const hash = req.params.shareLink;
         const link = await LinkModel.findOne({ hash });
-        console.log(link);
-        console.log(hash);
         if (!link) {
             return res.status(404).json({
                 message: "Invalid Link"
@@ -339,16 +349,14 @@ app.get("/api/v1/search", userMiddleware, async (req, res) => {
         const userId = req.userId;
         const q = req.query.q as string;
 
-        console.log("Search request received:", { userId, query: q });
-
         if (!q || q.trim() === "") {
-            console.log("Empty query, returning empty results");
             return res.json({
                 results: []
             });
         }
 
-        const searchRegex = new RegExp(q.trim(), "i");
+        const escaped = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const searchRegex = new RegExp(escaped, "i");
 
         const results = await contentModel.find({
             userId,
@@ -358,8 +366,6 @@ app.get("/api/v1/search", userMiddleware, async (req, res) => {
                 { link: searchRegex }
             ]
         });
-
-        console.log(`Search found ${results.length} results`);
 
         return res.json({
             results: results

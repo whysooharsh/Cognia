@@ -14,6 +14,7 @@ import {
   showCopyToast,
 } from "../components";
 import { useContent, useDebouncedSearch, useWorkspaces } from "../hooks";
+import type { ContentItem } from "../types/content";
 import {
   DeleteIcon,
   DocIcon,
@@ -29,7 +30,7 @@ export function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [filter, setFilter] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const [expandedItem, setExpandedItem] = useState<any | null>(null);
+  const [expandedItem, setExpandedItem] = useState<ContentItem | null>(null);
   const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
   const [wsModalOpen, setWsModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "a-z" | "z-a">("newest");
@@ -41,31 +42,31 @@ export function Dashboard() {
   const { workspaces, createWorkspace, deleteWorkspace } = useWorkspaces();
 
   const { contents, refresh } = useContent();
-  const dataToDisplay =
+  const dataToDisplay: ContentItem[] =
     query.trim().length > 0
       ? searchResults || []
       : contents || [];
 
-  const filtered = dataToDisplay.filter((item: any) => {
+  const filtered = dataToDisplay.filter((item) => {
     const matchesType = !filter || item.type === filter;
     const matchesWorkspace = !selectedWorkspace || item.workspaceId === selectedWorkspace;
     const matchesTag = !activeTag || (item.tags && item.tags.includes(activeTag));
     return matchesType && matchesWorkspace && matchesTag;
   });
 
-  const displayed = [...filtered].sort((a: any, b: any) => {
+  const displayed = [...filtered].sort((a, b) => {
     if (a.isPinned && !b.isPinned) return -1;
     if (!a.isPinned && b.isPinned) return 1;
     switch (sortBy) {
       case "oldest":
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        return new Date(a.createdAt ?? 0).getTime() - new Date(b.createdAt ?? 0).getTime();
       case "a-z":
         return (a.title || "").localeCompare(b.title || "");
       case "z-a":
         return (b.title || "").localeCompare(a.title || "");
       case "newest":
       default:
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime();
     }
   });
 
@@ -140,9 +141,9 @@ export function Dashboard() {
             onClose={() => setExpandedItem(null)}
             id={expandedItem._id}
             title={expandedItem.title}
-            content={expandedItem.content}
-            type={expandedItem.type}
-            link={expandedItem.link}
+            content={expandedItem.content ?? ""}
+            type={expandedItem.type ?? ""}
+            link={expandedItem.link ?? ""}
             tags={expandedItem.tags}
             onUpdated={() => {
               refresh();
@@ -160,7 +161,7 @@ export function Dashboard() {
             <div className="flex items-center gap-3">
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                 className="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
               >
                 <option value="newest">Newest first</option>
@@ -266,18 +267,19 @@ export function Dashboard() {
                 viewMode === "grid" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {displayed.map((item) => {
-                      const { type, link, title, content, tags, _id, isPinned } = item;
+                      const { type, link, title, content, tags, _id, isPinned, createdAt } = item;
 
                       return (
-                        <div key={_id} className="h-fit">
+                        <div key={_id} className="h-full">
                           <Card
                             id={_id}
                             title={title}
                             type={type}
-                            link={link}
-                            content={content}
+                            link={link ?? ""}
+                            content={content ?? ""}
                             tags={tags}
                             isPinned={isPinned}
+                            createdAt={createdAt}
                             onDelete={() => refresh()}
                             onExpand={() => setExpandedItem(item)}
                             onPin={handlePin}
